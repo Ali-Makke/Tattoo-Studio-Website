@@ -1,17 +1,35 @@
-:root{
+:root {
     --primary-color: #363636;
     --secondary-color: #f3ebd5;
-    /* --primary-color: #f3ebd5; */
-    /* --secondary-color: #363636; */
-    /* --neutral-color: #f4f4f4; */
+    /* --natural-color: #6d6860;
+    --text-color: #f3f3f3; */
+}
+
+.mid-theme{
+    --primary-color: #363636;
+    --secondary-color: #e0e0e0;
     /* --text-color: #333333; */
 }
 
-.dark-theme{
+.dark-theme {
     --primary-color: #f3ebd5;
     --secondary-color: #363636;
-    /* --neutral-color: #f4f4f4; */
-    /* --text-color: #333333; */
+    /* --neutral-color: #f4f4f4;
+    --text-color: #636363; */
+}
+
+@font-face {
+    font-family: 'Righteous';
+    src: url("fonts/Righteous/Righteous-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins/Poppins-Regular.ttf");
+}
+
+* {
+    box-sizing: border-box;
 }
 
 /* add scroll bar and smoothen*/
@@ -44,6 +62,25 @@ html {
 /* end scrollbar */
 
 
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    box-shadow: inset 0px 25px 7px -20px rgba(0, 0, 0, 0.44);
+
+    font-family: "Righteous", "Open Sans", "Atma", "Black And White Picture", "Black Ops One", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.wrapper {
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
 /* navigation bar */
 nav {
     display: flex;
@@ -52,8 +89,6 @@ nav {
     padding: 20px 0;
     width: 100%;
     border-bottom: 2px solid var(--primary-color);
-box-shadow: rgba(0, 0, 0, 0.5) 0px -25px 20px -20px;
-
 }
 
 nav ul {

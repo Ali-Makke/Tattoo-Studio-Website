@@ -16,11 +16,24 @@ document.getElementById('hamburger').addEventListener('click', function() {
     }
 });
 
-function changeColors(theme) {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-        root.classList.add('dark-theme');
-    } else {
-        root.classList.remove('dark-theme');
+// here i get the last saved theme in the localstorage
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.classList.add(savedTheme);
     }
+});
+
+//here i change the color to the next theme using a button click
+function changeColors() {
+    const themes = ['light', 'mid-theme', 'dark-theme'];
+    let currentTheme = document.documentElement.classList[0];
+
+    let nextThemeIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+    let nextTheme = themes[nextThemeIndex];
+
+    document.documentElement.classList.remove(currentTheme);
+    document.documentElement.classList.add(nextTheme);
+
+    localStorage.setItem('theme', nextTheme);
 }

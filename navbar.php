@@ -6,8 +6,7 @@
         &#9776;
     </div>
     <ul id="nav-links">
-        <li><button onclick="changeColors('dark')">dark</button></li>
-        <li><button onclick="changeColors('light')">light</button></li>
+        <li><button onclick="changeColors()" id="theme-toggle">Theme</button></li>
         <li><a href="gallery.php">Gallery</a></li>
         <li><a href="pricing.php">Pricing</a></li>
         <li><a href="booking.php">Booking</a></li>

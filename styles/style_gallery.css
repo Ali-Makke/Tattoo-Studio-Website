@@ -1,55 +1,10 @@
-@font-face {
-    font-family: 'Righteous';
-    src: url("fonts/Righteous/Righteous-Regular.ttf");
-}
-
-@font-face {
-    font-family: "Poppins";
-    src: url("fonts/Poppins/Poppins-Regular.ttf");
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-
-    color: var(--primary-color);
-    background-color: var(--secondary-color);
-    box-shadow: inset 0px 25px 7px -20px rgba(0, 0, 0, 0.44);
-
-    font-family: "Righteous", "Open Sans", "Atma", "Black And White Picture", "Black Ops One", Arial, sans-serif;
-    font-weight: 400;
-    font-size: 1rem;
-}
-
-header {
-    /* background-color: #111;
-    color: #fff; */
-    text-align: center;
-    padding: 10px 0;
-}
-
-nav {
-    background-color: var(--secondary-color);
-    padding: 10px 0;
-    text-align: center;
-}
-
-nav a {
-    color: var(--primary-color);
-    margin: 0 15px;
-}
-
 .container {
     padding: 20px;
 }
 
 h1,
 h2 {
-    color: #f9c802;
+    color: var(--primary-color);
 }
 
 .gallery {

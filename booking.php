@@ -77,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <div class="wrapper">
         <div class="header_wrapper">
             <header>
                 <?php include 'navbar.php'; ?>
@@ -217,7 +216,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit">Submit Booking</button>
             </section>
         </form>
-    </div>
     <?php include 'footer.php'; ?>
 </body>
 
