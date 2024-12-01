@@ -1,0 +1,462 @@
+@font-face {
+    font-family: 'Righteous';
+    src: url("fonts/Righteous/Righteous-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins/Poppins-Regular.ttf");
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Global Styles */
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    box-shadow: inset 0px 25px 7px -20px rgba(0, 0, 0, 0.44);
+
+    font-family: "Righteous", "Open Sans", "Atma", "Black And White Picture", "Black Ops One", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.wrapper {
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+}
+
+.grid-header-section * {
+    padding: 0;
+    margin: 0;
+}
+
+.grid-header-section {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    grid-auto-columns: 1fr;
+    gap: 20px;
+    grid-template-areas:
+        "headers headers image1"
+        "image2 image2 contact";
+    min-height: 110vh;
+    align-items: center;
+
+    color: var(--primary-color);
+    /* border: 2px solid rgb(54, 54, 54); */
+    /* border-top: 2px solid var(--primary-color);
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 25px 20px -20px; */
+}
+
+.grid-items {
+    background-repeat: no-repeat;
+    background-size: 15% 15%;
+    /* background-size: 20% 20%; */
+    object-fit: cover;
+}
+
+/* grid Areas */
+/* area1 */
+.headers_container {
+    grid-area: headers;
+    margin-left: 50px;
+    background-image: url("../images/icons/star4.svg"), url("../images/icons/star2.svg");
+    background-position: top center, right center;
+    letter-spacing: 0.1em;
+    font-size: 2.75em;
+}
+
+
+/* area2 */
+.artist_container {
+    grid-area: image1;
+    background-image: url("../images/icons/star1.svg");
+    background-position: top right;
+}
+
+.artist_container>img {
+    width: 90%;
+    /* height: 100%; */
+    margin-left: 10px;
+    object-fit: cover;
+    border-radius: 50% 50% 50% 50% / 30% 30% 30% 30%;
+    /* transition: border-radius 0.3s; */
+}
+
+/* area3 */
+.tattoo_container {
+    grid-area: image2;
+    display: flex;
+    align-items: center;
+    background-image: url("../images/icons/star1.svg");
+    background-position: center right;
+    margin-left: 50px;
+}
+
+.tattoo_container>img {
+    width: 13%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50% 50% 50% 50% / 40% 40% 40% 40%;
+}
+
+.tattoo_container>p {
+    width: 45%;
+    margin-left: 20px;
+    text-wrap: pretty;
+    line-height: 1.4em;
+}
+
+
+/* area4 */
+.announcement_container {
+    grid-area: contact;
+    margin-bottom: 5px;
+}
+
+.announcement_container>p {
+    font-family: sans-serif;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid #000;
+    line-height: 0.1em;
+    margin: 15px 0 15px;
+}
+
+.announcement_container>p>span {
+    background-color: var(--secondary-color);
+    padding: 0 10px;
+}
+
+.announcement_container>a>button {
+    padding: 7px 15px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: auto;
+    display: block;
+}
+
+.announcement_container>a>button:hover,
+.announcement_container>a>button:focus-within {
+    background-color: rgba(37, 37, 37, 0.906);
+}
+
+/* End Header */
+
+.offering-section {
+    margin-top: 100px;
+}
+
+#offering_header {
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("../images/mountain.jpg");
+    background-clip: text;
+    background-repeat: no-repeat;
+    color: transparent;
+    width: 100%;
+    font-size: calc(50px + (74 * (100vw - 16em)) / 500);
+    text-wrap: pretty;
+}
+
+.offering-grid {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    gap: 25px;
+    grid-template-areas:
+        "longv1 longh2 longh2 circle1"
+        "longv1 longv3 oval1 oval2"
+        "circle2 longv3 longh4 longh4";
+    min-height: 200vh;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 25px 10px -20px;
+}
+
+.img1_container {
+    grid-area: longv1;
+    position: relative;
+    width: 100%;
+    align-self: self-end;
+    height: 90.5%;
+}
+
+.img2_container {
+    grid-area: longh2;
+    width: 100%;
+    height: 80%;
+    align-self: self-end;
+    overflow: hidden;
+    position: relative;
+    border-radius: 40% 40% 40% 40% / 100% 100% 100% 100%;
+    background-color: var(--primary-color);
+}
+
+.img2 {
+    position: absolute;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    border-radius: 40% 40% 40% 40% / 100% 100% 100% 100%;
+}
+
+.img3_container {
+    grid-area: circle1;
+    position: relative;
+    width: 100%;
+    height: 80%;
+    align-self: self-end;
+    overflow: hidden;
+}
+
+.img3,
+.img7 {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.img4_container {
+    grid-area: longv3;
+    position: relative;
+    width: 100%;
+    height: 90.5%;
+    align-self: self-start;
+}
+
+.img1,
+.img4 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 85% 85% 85% 85% / 30% 30% 30% 30%;
+    object-fit: cover;
+}
+
+.img5_container {
+    grid-area: oval1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.img5,
+.img6 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50% 50% 50% 50% / 40% 40% 40% 40%;
+    object-fit: cover;
+}
+
+.img6_container {
+    grid-area: oval2;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.img7_container {
+    grid-area: circle2;
+    position: relative;
+    width: 100%;
+    height: 80%;
+    align-self: self-start;
+}
+
+.img8_container {
+    grid-area: longh4;
+    width: 100%;
+    height: 80%;
+    align-self: self-start;
+    overflow: hidden;
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("../images/tat5.1.jpg");
+    background-size: cover;
+    color: white;
+    border-radius: 40% 40% 40% 40% / 100% 100% 100% 100%;
+}
+
+#img8_content {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    align-content: center;
+}
+
+.img8_header {
+    margin-top: 0;
+    font-size: 2.3em;
+}
+
+.img8_button {
+    padding: 15px 29px;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 20px;
+    background-color: #BA8C2B;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.img8_button a {
+    color: #000;
+    text-decoration: none;
+}
+
+.img8_button:hover,
+.img8_button:focus-within {
+    background-color: #edb8457f;
+}
+
+@media only screen and (max-width: 700px) {
+    .wrapper {
+        width: 98%;
+    }
+
+    .headers_container {
+        font-size: calc(1.1em + (1.25 * (100vw - 20em)) / 100);
+        margin: 0;
+    }
+
+    .tattoo_container {
+        margin: 0;
+    }
+
+    .tattoo_container>p {
+        width: 100%;
+    }
+
+    .announcement_container>h2 {
+        font-size: calc(0.8em + (1.25 * (100vw - 20em)) / 100);
+    }
+
+    .announcement_container>p>span {
+        line-height: 1em;
+    }
+
+    .artist_container {
+        width: 100%;
+    }
+
+    .artist_container>img {
+        width: 100%;
+        margin: 0;
+    }
+
+
+
+    .offering-grid {
+        grid-template-areas:
+            "oval1 oval2"
+            "circle1 circle2"
+            "longh4 longh4";
+        gap: 5px;
+    }
+
+    .img3_container,
+    .img7_container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .img3,
+    .img7 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50% 50% 50% 50% / 40% 40% 40% 40%;
+        object-fit: cover;
+    }
+
+    .img2_container,
+    .img1_container,
+    .img4_container {
+        grid-area: none;
+        width: auto;
+        height: auto;
+        align-self: auto;
+        position: absolute;
+        border-radius: none;
+        background-color: none;
+    }
+
+    .img5_container {
+        grid-area: oval1;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .img5 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50% 50% 50% 50% / 40% 40% 40% 40%;
+        object-fit: cover;
+    }
+
+    .img6_container {
+        grid-area: oval2;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .img6 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50% 50% 50% 50% / 40% 40% 40% 40%;
+        object-fit: cover;
+    }
+}
+
+/* end of offerings */

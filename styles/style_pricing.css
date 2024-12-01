@@ -1,0 +1,252 @@
+@font-face {
+    font-family: 'Righteous';
+    src: url("fonts/Righteous/Righteous-Regular.ttf");
+}
+
+* {
+    box-sizing: content-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    color: #373737;
+    background-color: var(--secondary-color);
+    box-shadow: inset 0px 25px 7px -20px rgba(0, 0, 0, 0.44);
+
+    font-size: 1.108rem;
+    font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Header */
+header {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    width: 90%;
+    border-bottom: 2px solid #373737;
+    margin: auto;
+    margin-bottom: 80px;
+    overflow: hidden;
+    font-weight: 500;
+    font-family: "Righteous", "Open Sans", "Atma", "Black And White Picture", "Black Ops One", Arial, sans-serif;
+}
+
+/* calculator */
+.calculator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.2em;
+    width: 39%;
+    margin: auto;
+    margin-top: 1rem;
+
+    padding: 1em 0 3em 0;
+    margin-bottom: 60px;
+    border-radius: 35px;
+    background-color: white;
+    box-shadow: 5px 5px 0px;
+    color: #6C757D;
+}
+
+/* calculator header */
+#calculator__headers {
+    text-align: center;
+}
+
+.calculator__head {
+    margin: auto;
+}
+
+#card_header1 {
+    color: #373737;
+}
+
+#card_header2 {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    width: 60%;
+    color: #6C757D;
+}
+
+#card_header2_text {
+    color: #EA4E5B;
+}
+
+/* end calculator header */
+
+/* radio */
+
+.radio_lbl {
+    padding: 7px 10px;
+    background-color: #EA4E5B;
+    color: #FFFFFF;
+    border-radius: 3px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+#radio_lbl_color {
+    background-color: #f5a7ad;
+}
+
+.radio_label {
+    justify-self: start;
+    margin-left: 15%;
+}
+
+.radioin {
+    position: absolute;
+    z-index: -1;
+}
+
+#radio_container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    align-items: center;
+    justify-items: center;
+    row-gap: 20px;
+}
+
+/* end radio */
+
+/* price */
+#price_container {
+    width: 100%;
+}
+
+#p2 {
+    font-size: 1.6rem;
+    margin-left: 8%;
+}
+
+#priceBox {
+    width: 80%;
+    margin: auto;
+    display: block;
+
+    padding: 10px;
+    margin-top: 20px;
+    text-align: center;
+
+    font-size: 1.6rem;
+}
+
+/* end price */
+
+
+/* slider stuff */
+/* appearance */
+.sliderlbl {
+    margin-left: 8%;
+}
+
+.slider_container {
+    width: 100%;
+}
+
+.slider {
+    font-size: 1.39rem;
+    width: 80%;
+    display: block;
+    margin: auto;
+}
+
+.slider_result {
+    text-align: center;
+    font-size: 1rem;
+    color: #EA4E5B;
+    margin-top: 10px;
+}
+
+.slider {
+    color: #ef233c;
+    --thumb-height: 1.13em;
+    --track-height: 0.41em;
+    --track-color: rgba(0, 0, 0, 0.2);
+    --brightness-hover: 130%;
+    --brightness-down: 80%;
+    --clip-edges: 0.125em;
+}
+
+.slider {
+    color: #6C6C71;
+    --track-color: #F9DDE0;
+}
+
+/*  WebKit specific styles  */
+.slider,
+.slider::-webkit-slider-runnable-track,
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: var(--thumb-height);
+    border-radius: 39%;
+}
+
+.slider::-webkit-slider-thumb {
+    width: var(--thumb-width, var(--thumb-height));
+    background: linear-gradient(currentColor 0 0) scroll no-repeat left center / 50% calc(var(--track-height) + 1px);
+    background-color: currentColor;
+    border-radius: var(--thumb-width, var(--thumb-height));
+}
+
+.slider:hover::-webkit-slider-thumb {
+    filter: brightness(var(--brightness-hover));
+    cursor: pointer;
+}
+
+.slider:active::-webkit-slider-thumb {
+    filter: brightness(var(--brightness-down));
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-runnable-track {
+    background: linear-gradient(var(--track-color) 0 0) scroll no-repeat center / 100% calc(var(--track-height) + 1px);
+}
+
+.slider:focus {
+    outline: none;
+}
+
+@media only screen and (max-width: 700px) {
+    .calculator {
+        width: 80%;
+    }
+}
+
+/* end slider stuff */
+/* end calculator */
+
+
+/* main */
+main {
+    text-align: center;
+}
+
+.img_container {
+    display: flex;
+}
+
+.detail_section_categories {
+    font-size: 1em;
+    word-spacing: 1em;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 12px 7px -11px;
+    font-weight: 500;
+}
+
+.detail_section_img {
+    width: 32.49vw;
+    height: 275px;
+    margin: auto;
+    object-fit: cover;
+}
+
+.detail_section_container {
+    margin-bottom: 50px;
+}
+
+/* end of main */

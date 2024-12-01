@@ -1,0 +1,274 @@
+@font-face {
+    font-family: 'Righteous';
+    src: url("fonts/Righteous/Righteous-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("fonts/Poppins/Poppins-Regular.ttf");
+}
+
+/* Global Styles */
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: #f2f2f2;
+    background-color: #B09F72;
+    font-family: "Poppins", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.wrapper {
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Header Styles */
+.header_wrapper {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)), url("../images/booking_back6.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+header {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    overflow: hidden;
+    margin: auto;
+    width: 90%;
+    min-height: 100vh;
+
+    font-weight: 500;
+    font-family: "Righteous", "Open Sans", "Atma", "Black And White Picture", "Black Ops One", Arial, sans-serif;
+}
+
+/* navigation bar */
+#header_nav {
+    border-bottom: 2px solid #aaa9a9;
+}
+
+nav ul li a {
+    color: whitesmoke;
+}
+
+/* end navigation bar */
+.header_text_container {
+    width: fit-content;
+    margin: auto;
+    margin-top: 27vh;
+}
+
+.header_text_container {
+    width: fit-content;
+    margin: auto;
+    margin-top: 27vh;
+}
+
+.header_text {
+    font-family: 'Righteous', Arial, sans-serif;
+    font-size: 3rem;
+    color: #f2f2f2;
+}
+
+.quotes {
+    text-align: center;
+    font-size: calc(15px + (20 * (100vw - 16em)) / 500);
+    text-wrap: pretty;
+    font-family: "poppins";
+    backdrop-filter: blur(10px);
+}
+
+/* Section Styles */
+.sectionf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #121212;
+    color: #f2f2f2;
+}
+
+.sectionb {
+    min-height: 100vh;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#section2 {
+    background-image: url("../images/booking_back12.jpg");
+    background-position: 0% 50%;
+}
+
+#section4 {
+    background-image: url("../images/booking_back2.jpg");
+    background-position: 0% 85%;
+}
+
+#section6 {
+    background-image: url("../images/booking_back9.jpg");
+    background-position: center;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 25px 20px -20px;
+}
+
+.sectionb h1 {
+    font-size: 3rem;
+    color: #f2f2f2;
+}
+
+.sibling {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 100%;
+}
+
+/* Footer Styles */
+#footer {
+    background-color: #2c2c2c;
+    color: #f2f2f2;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+#footer_form {
+    display: flex;
+}
+
+/* Form Styles */
+form {
+    width: 75%;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* padding: 0 2rem 2rem 2rem; */
+    border-radius: 10px;
+    box-shadow: 0px 0px 7px 10px rgba(0, 0, 0, 0.44);
+}
+
+form label {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+form input[type="text"],
+form input[type="email"],
+form select,
+form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #3d3d3d;
+    color: #f2f2f2;
+    font-size: 1rem;
+}
+
+form select {
+    min-width: 100%;
+}
+
+form input[type="file"] {
+    display: none;
+}
+
+.dropzone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #3d3d3d;
+    color: #f2f2f2;
+    border-radius: 5px;
+}
+
+.dropzone.dragover {
+    border-color: #000;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 100px;
+    max-height: 200px;
+}
+
+form button {
+    padding: 10px 20px;
+    background-color: #B09F72;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #8c7e56;
+}
+
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    form {
+        width: 95%;
+    }
+}
+
+p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* input[type="checkbox"], label {
+    display: inline;
+    margin: 0;
+    width: 85px;
+} */
+
+.final_dates {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    align-items: center;
+    justify-content: center;
+}
+
+.final_times {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(50px, 1fr));
+    align-items: center;
+    justify-content: center;
+}
+
+@media only screen and (max-width: 700px) {
+    .final_times {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dropzone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.dropzone.dragover {
+    border-color: #000;
+}

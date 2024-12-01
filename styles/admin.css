@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--secondary-color);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    width: 95%;
+}
+
+.heading {
+    border-top: 2px solid black;
+    padding-top: 30px;
+    margin-top: -15px;
+    text-align: center;
+    color: #333;
+}
+
+.welcome {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.statistics ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.statistics ul li {
+    margin-bottom: 10px;
+}
+
+.controls ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.controls ul li {
+    margin-bottom: 8px;
+}
+
+.recent-transactions {
+    margin-top: 20px;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    text-align: left;
+    color: #333;
+}
+
+tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.table td {
+    text-align: center;
+}
+
+.logout-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+}
+
+.preview_img{
+    width: 250px;
+    height: 400px;
+    background-color: rgba(0, 0, 0, 0.1);
+    object-fit: contain;
+}
+
+.img_remove{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#image_preview{
+    height: 400px;
+    object-fit: contain;
+}
