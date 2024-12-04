@@ -24,13 +24,13 @@ signin page{
 }
 
 # In Progress:
+booking{
+    *make it more intuitive and easier for the user
+}
+
 gallery{
     *make a better ui/ux
     *clicking a photo zooms or enlarges the photo
-}
-
-booking{
-    *make it more intuitive and easier for the user
 }
 
 about us{
@@ -38,9 +38,7 @@ about us{
     *implement the page design
 }
 
-pricing page {
-    *make price calcualtor more accurate
-}
+pricing page {}
 
 general{
     *in header add link contact button or instant live chat button
@@ -78,4 +76,8 @@ signin page{
     -make go home link responsive
     -make submit button bolder
     -
+}
+
+pricing page {
+    *make price calcualtor more accurate
 }

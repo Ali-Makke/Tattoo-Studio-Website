@@ -8,7 +8,7 @@ include 'authentication_check.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InkVibe | Pricing</title>
-    <link rel="icon" type="image/x-icon" href="images/icons/logo1.svg">
+    <link rel="icon" type="image/x-icon" href="images/icons/t4.png">
     <link rel="stylesheet" href="styles/style_pricing.css">
     <link rel="stylesheet" href="styles/included.css">
     <script src="scripts/pricing_Calculator.js"></script>
@@ -56,7 +56,7 @@ include 'authentication_check.php';
         <!-- final price -->
         <div id="price_container">
             <label for="price" id="p2">Price</label><br>
-            <input type="text" id="priceBox" name="price" value="$27 - $33" disabled>
+            <input type="text" id="priceBox" name="price" value="$27 - $45" disabled>
         </div>
     </div>
 

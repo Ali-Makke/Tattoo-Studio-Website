@@ -10,10 +10,10 @@ function calculatePriceEstimate() {
         case "1": sizeText.innerText = "Tiny / minimalist"; size = 30; break;
         case "2": sizeText.innerText = "Small (<5 cm / 2'')"; size = 50; break;
         case "3": sizeText.innerText = "Medium (up to 10 cm / 4'')"; size = 150; break;
-        case "4": sizeText.innerText = "Large (up to 20 cm / 8'')"; size = 500; break;
-        case "5": sizeText.innerText = "Half sleeve"; size = 600; break;
-        case "6": sizeText.innerText = "Full limb"; size = 700; break;
-        case "7": sizeText.innerText = "Full back"; size = 900; break;
+        case "4": sizeText.innerText = "Large (up to 20 cm / 8'')"; size = 250; break;
+        case "5": sizeText.innerText = "Half sleeve"; size = 300; break;
+        case "6": sizeText.innerText = "Full limb"; size = 400; break;
+        case "7": sizeText.innerText = "Full back"; size = 500; break;
         default: break;
     }
 
@@ -47,7 +47,7 @@ function calculatePriceEstimate() {
     let totalPrice = size * (1 + detailRate) * (1 + colorRate);
     console.log(totalPrice);
     let lowerPrice = Math.trunc(totalPrice * (1 - 0.1));
-    let upperPrice = Math.trunc(totalPrice * (1 + 0.1));
+    let upperPrice = Math.trunc(totalPrice * (1 + 0.5));
     // Display estimates
     let totalPriceBox = document.getElementById("priceBox");
     totalPriceBox.value = "$" + lowerPrice + " - $" + upperPrice;
