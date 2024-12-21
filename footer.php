@@ -52,7 +52,7 @@
             </div>
         </div>
         <div id="copyright">
-            <p>Coptright @ 2023 Tattooshop All Rights Reserved</p>
+            <p>Copyright @ 2023 Tattooshop All Rights Reserved</p>
             <p>Artist Charles T. Chaikofsky</p>
         </div>
     </div>

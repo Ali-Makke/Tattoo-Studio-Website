@@ -13,8 +13,8 @@ $currentMonth = date('m');
 // Total Users
 $sqlUsers = "SELECT 
                 (SELECT COUNT(*) FROM users WHERE role_id = 1) AS admins,
-                (SELECT COUNT(*) FROM users WHERE role_id = 2) AS artists,
-                (SELECT COUNT(*) FROM users WHERE role_id = 3) AS customers";
+                (SELECT COUNT(*) FROM users WHERE role_id = 2) AS customers,
+                (SELECT COUNT(*) FROM users WHERE role_id = 3) AS artists";
 $resultUsers = mysqli_query($conn, $sqlUsers);
 $rowUsers = mysqli_fetch_assoc($resultUsers);
 $totalAdmins = $rowUsers['admins'];
@@ -28,7 +28,7 @@ $rowBookings = mysqli_fetch_assoc($resultBookings);
 $totalBookings = $rowBookings['total_bookings'];
 
 // Total Payments
-$sqlPayments = "SELECT SUM(amount) AS total_payments FROM payments WHERE status = 'paid'";
+$sqlPayments = "SELECT SUM(total_price) AS total_payments FROM payments WHERE status = 'paid'";
 $resultPayments = mysqli_query($conn, $sqlPayments);
 $rowPayments = mysqli_fetch_assoc($resultPayments);
 $totalPayments = $rowPayments['total_payments'] ?? 0;
@@ -102,10 +102,10 @@ $resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
         <div class="controls">
             <h3>Controls</h3>
             <ul>
-                <li><a href="add_to_gallery.php">Edit Gallery</a></li>
                 <li><a href="add_new_artist.php">Manage Artists</a></li>
-                <li><a href="add_new_category.php">Edit Categories</a></li>
-                <li><a href="available_bookings.php">Manage Bookings</a></li>
+                <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
+                <li><a href="manage_bookings.php">Manage Bookings</a></li>
+                <li><a href="manage_categories.php">Manage Categories</a></li>
                 <li><a href="add_transaction.php">Manage Transactions</a></li>
             </ul>
         </div>

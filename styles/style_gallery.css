@@ -2,16 +2,11 @@
     padding: 20px;
 }
 
-h1,
-h2 {
-    color: var(--primary-color);
-}
-
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
-    grid-auto-rows: 500px;
+    grid-auto-rows: 130px;
 }
 
 .gallery-item {
@@ -23,7 +18,7 @@ h2 {
 .gallery-item img {
     width: 100%;
     height: auto;
-    border-radius: 15px;
+    border-radius: 5px;
     -khtml-user-select: none;
     -o-user-select: none;
     -moz-user-select: none;
@@ -53,8 +48,8 @@ h2 {
     }
 
     .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 5;
-        grid-auto-rows: 300px;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 5px;
+        grid-auto-rows: 100px;
     }
 }

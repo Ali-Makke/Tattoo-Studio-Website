@@ -19,9 +19,6 @@ header {
 }
 
 .heading {
-    border-top: 2px solid black;
-    padding-top: 30px;
-    margin-top: -15px;
     text-align: center;
     color: #333;
 }
@@ -100,7 +97,6 @@ tr:nth-child(odd) {
 
 .preview_img{
     width: 250px;
-    height: 400px;
     background-color: rgba(0, 0, 0, 0.1);
     object-fit: contain;
 }

@@ -9,11 +9,11 @@ function authenticate_user() {
 }
 
 function is_admin() {
-    return isset($_SESSION['role']) && $_SESSION['role'] == 'admin';
+    return isset($_SESSION['role_txt']) && $_SESSION['role_txt'] == 'admin';
 }
 
 function is_user(){
-    return isset($_SESSION['role']) && $_SESSION['role'] == 'user';
+    return isset($_SESSION['role_txt']) && $_SESSION['role_txt'] == 'user';
 }
 
 function require_admin_access() {

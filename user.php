@@ -38,7 +38,7 @@ $resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
             <?php include 'navbar.php'; ?>
             <h2 class="heading">User Dashboard</h2>
         </header>
-        <p>Welcome, <?php echo $_SESSION['fname']; ?>. You are logged in as a artist.</p>
+        <p>Welcome, <?php echo $_SESSION['fname']; ?>. You are logged in as an artist.</p>
         
         <h3>Profile Information</h3>
         <ul>

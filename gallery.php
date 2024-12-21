@@ -16,7 +16,7 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InkVibe | Gallery</title>
-    <link rel="icon" type="image/x-icon" href="images/icons/logo1.svg">
+    <link rel="icon" type="image/x-icon" href="images/icons/t4.png">
     <link rel="stylesheet" href="styles/included.css">
     <link rel="stylesheet" href="styles/style_gallery.css">
     <script defer src="scripts/included.js"></script>
