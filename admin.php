@@ -9,27 +9,57 @@ if (!is_admin()) {
 }
 
 $currentMonth = date('m');
-$sqlCustomers = "SELECT COUNT(*) AS num_customers FROM customers WHERE MONTH(created_at) = '$currentMonth'";
-$resultCustomers = mysqli_query($conn, $sqlCustomers);
-$rowCustomers = mysqli_fetch_assoc($resultCustomers);
-$numCustomers = $rowCustomers['num_customers'];
 
+// Total Users
+$sqlUsers = "SELECT 
+                (SELECT COUNT(*) FROM users WHERE role_id = 1) AS admins,
+                (SELECT COUNT(*) FROM users WHERE role_id = 2) AS artists,
+                (SELECT COUNT(*) FROM users WHERE role_id = 3) AS customers";
+$resultUsers = mysqli_query($conn, $sqlUsers);
+$rowUsers = mysqli_fetch_assoc($resultUsers);
+$totalAdmins = $rowUsers['admins'];
+$totalArtists = $rowUsers['artists'];
+$totalCustomers = $rowUsers['customers'];
+
+// Total Bookings
+$sqlBookings = "SELECT COUNT(*) AS total_bookings FROM bookings";
+$resultBookings = mysqli_query($conn, $sqlBookings);
+$rowBookings = mysqli_fetch_assoc($resultBookings);
+$totalBookings = $rowBookings['total_bookings'];
+
+// Total Payments
+$sqlPayments = "SELECT SUM(amount) AS total_payments FROM payments WHERE status = 'paid'";
+$resultPayments = mysqli_query($conn, $sqlPayments);
+$rowPayments = mysqli_fetch_assoc($resultPayments);
+$totalPayments = $rowPayments['total_payments'] ?? 0;
+
+// Total Revenue
 $sqlRevenue = "SELECT SUM(amount) AS total_revenue FROM transactions WHERE type = 'revenue'";
 $resultRevenue = mysqli_query($conn, $sqlRevenue);
 $rowRevenue = mysqli_fetch_assoc($resultRevenue);
-$totalRevenue = $rowRevenue['total_revenue'];
+$totalRevenue = $rowRevenue['total_revenue'] ?? 0;
 
+// Total Expenses
 $sqlExpenses = "SELECT SUM(amount) AS total_expenses FROM transactions WHERE type = 'expense'";
 $resultExpenses = mysqli_query($conn, $sqlExpenses);
 $rowExpenses = mysqli_fetch_assoc($resultExpenses);
-$totalExpenses = $rowExpenses['total_expenses'];
+$totalExpenses = $rowExpenses['total_expenses'] ?? 0;
 
-$sqlRecentTattoos = "SELECT tattoos.*, customers.name AS customer_name, users.fname AS artist_name 
-                     FROM tattoos 
-                     JOIN customers ON tattoos.customer_id = customers.id 
-                     JOIN users ON tattoos.user_id = users.id 
-                     ORDER BY tattoos.date DESC LIMIT 10";
-$resultRecentTattoos = mysqli_query($conn, $sqlRecentTattoos);
+// Recent Bookings
+$sqlRecentBookings = "SELECT bookings.*, users.fname AS artist_name 
+                      FROM bookings 
+                      JOIN users ON bookings.artist_id = users.id 
+                      ORDER BY created_at DESC LIMIT 5";
+$resultRecentBookings = mysqli_query($conn, $sqlRecentBookings);
+
+// Recent Reviews
+$sqlRecentReviews = "SELECT reviews.*, users.fname AS artist_name, customers.user_id AS customer_user_id
+                     FROM reviews
+                     JOIN artists ON reviews.artist_id = artists.id
+                     JOIN users ON artists.user_id = users.id
+                     JOIN customers ON reviews.customer_id = customers.id
+                     ORDER BY created_at DESC LIMIT 5";
+$resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +68,7 @@ $resultRecentTattoos = mysqli_query($conn, $sqlRecentTattoos);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InkVibe | Admin</title>
+    <title>InkVibe | Admin Dashboard</title>
     <link rel="stylesheet" href="styles/admin.css">
     <link rel="stylesheet" href="styles/included.css">
     <script defer src="scripts/included.js"></script>
@@ -52,77 +82,79 @@ $resultRecentTattoos = mysqli_query($conn, $sqlRecentTattoos);
 
         <h2 class="heading">Admin Dashboard</h2>
         <p class="welcome">Welcome, <?php echo $_SESSION['fname']; ?>. You are logged in as an admin.</p>
+        
+        <!-- Overview Statistics -->
         <div class="statistics">
-            <h3>Statistics</h3>
+            <h3>Overview Statistics</h3>
             <ul>
-                <li>Number of Customers this Month: <?php echo $numCustomers; ?></li>
+                <li>Total Admins: <?php echo $totalAdmins; ?></li>
+                <li>Total Artists: <?php echo $totalArtists; ?></li>
+                <li>Total Customers: <?php echo $totalCustomers; ?></li>
+                <li>Total Bookings: <?php echo $totalBookings; ?></li>
+                <li>Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
                 <li>Total Revenue: $<?php echo number_format($totalRevenue, 2); ?></li>
                 <li>Total Expenses: $<?php echo number_format($totalExpenses, 2); ?></li>
-                <li>Net Income: $<?php echo number_format(($totalRevenue - $totalExpenses), 2); ?></li>
+                <li>Net Income: $<?php echo number_format($totalRevenue - $totalExpenses, 2); ?></li>
             </ul>
         </div>
+
+        <!-- Controls Section -->
         <div class="controls">
             <h3>Controls</h3>
             <ul>
-                <li><a href="add_tattoo.php">Add Tattoo</a></li>
-                <li><a href="add_customer.php">Add New Customer</a></li>
-                <li><a href="add_transaction.php">Add New Transaction</a></li>
-                <li><a href="add_to_gallery.php">Add new work to gallery</a></li>
-                <li><a href="available_bookings.php">Check available bookings</a></li>
-                <li><a href="remove_from_gallery.php">Remove Tattoo from Gallery</a></li>
+                <li><a href="add_to_gallery.php">Edit Gallery</a></li>
+                <li><a href="add_new_artist.php">Manage Artists</a></li>
+                <li><a href="add_new_category.php">Edit Categories</a></li>
+                <li><a href="available_bookings.php">Manage Bookings</a></li>
+                <li><a href="add_transaction.php">Manage Transactions</a></li>
             </ul>
         </div>
-        <div class="recent-transactions">
-            <h3>Recent Transactions</h3>
-            <div class="table-responsive">
-                <table border="1" class="table">
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h3>Recent Bookings</h3>
+            <table border="1" class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Style</th>
+                    <th>Placement</th>
+                    <th>Artist</th>
+                    <th>Created At</th>
+                </tr>
+                <?php while ($row = mysqli_fetch_assoc($resultRecentBookings)) : ?>
                     <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>Amount</th>
+                        <td><?php echo $row['id']; ?></td>
+                        <td><?php echo $row['style']; ?></td>
+                        <td><?php echo $row['placement']; ?></td>
+                        <td><?php echo $row['artist_name']; ?></td>
+                        <td><?php echo $row['created_at']; ?></td>
                     </tr>
-                    <?php
-                    $sqlRecentTransactions = "SELECT * FROM transactions ORDER BY transaction_date DESC LIMIT 10";
-                    $resultRecentTransactions = mysqli_query($conn, $sqlRecentTransactions);
-                    while ($row = mysqli_fetch_assoc($resultRecentTransactions)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['transaction_date'] . "</td>";
-                        echo "<td>" . ucfirst($row['type']) . "</td>";
-                        echo "<td>" . $row['description'] . "</td>";
-                        echo "<td>$" . number_format($row['amount'], 2) . "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </table>
-            </div>
-            <h3>Recent Tattoos</h3>
-            <div class="table-responsive">
-                <table class="table">
+                <?php endwhile; ?>
+            </table>
+
+            <h3>Recent Reviews</h3>
+            <table border="1" class="table">
+                <tr>
+                    <th>Customer</th>
+                    <th>Artist</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                </tr>
+                <?php while ($row = mysqli_fetch_assoc($resultRecentReviews)) : ?>
                     <tr>
-                        <th>Date</th>
-                        <th>Customer</th>
-                        <th>Artist</th>
-                        <th>Description</th>
-                        <th>Price</th>
+                        <td><?php echo $row['customer_user_id']; ?></td>
+                        <td><?php echo $row['artist_name']; ?></td>
+                        <td><?php echo $row['rating']; ?>/5</td>
+                        <td><?php echo $row['comment']; ?></td>
+                        <td><?php echo $row['created_at']; ?></td>
                     </tr>
-                    <?php
-                    while ($row = mysqli_fetch_assoc($resultRecentTattoos)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['date'] . "</td>";
-                        echo "<td>" . $row['customer_name'] . "</td>";
-                        echo "<td>" . $row['artist_name'] . "</td>";
-                        echo "<td>" . $row['description'] . "</td>";
-                        echo "<td>$" . number_format($row['price'], 2) . "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </table>
-            </div>
+                <?php endwhile; ?>
+            </table>
         </div>
         <a class="logout-link" href="logout.php">Logout</a>
-
     </div>
+    
     <?php include 'footer.php'; ?>
 </body>
 

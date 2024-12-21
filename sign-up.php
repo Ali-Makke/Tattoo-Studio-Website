@@ -48,18 +48,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $lpassword = test_input($_POST["lpassword"]);
             if (empty($lemailErr)) {
-                $sql = "SELECT * FROM users WHERE email='$lemail'";
+                $sql = "SELECT users.*, roles.role as role_txt
+                        FROM users
+                        INNER JOIN roles
+                        ON users.role_id = roles.id
+                        WHERE users.email='$lemail'";
                 $result = mysqli_query($conn, $sql);
                 $user = mysqli_fetch_assoc($result);
 
                 if ($user && password_verify($lpassword, $user['password'])) {
                     $_SESSION['email'] = $user['email'];
-                    $_SESSION['role'] = $user['role'];
                     $_SESSION['fname'] = $user['fname'];
+                    $_SESSION['role_txt'] = $user['role_txt'];
 
-                    if ($user['role'] == 'admin') {
+                    if ($user['role_txt'] == 'admin') {
                         header("Location: admin.php");
-                    } else if ($user['role'] == 'user') {
+                    } else if ($user['role_txt'] == 'customer') {
                         header("Location: user.php");
                     } else {
                         header("Location: profile.php");
@@ -117,7 +121,7 @@ function isValidPassword($password)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InvVibe | Sign-in</title>
-    <link rel="icon" type="image/x-icon" href="images/icons/logo1.svg">
+    <link rel="icon" type="image/x-icon" href="images/icons/t4.png">
     <link rel="stylesheet" href="styles/style_signup.css">
     <script defer src="scripts/signup.js"></script>
 </head>
