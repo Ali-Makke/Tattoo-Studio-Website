@@ -20,7 +20,15 @@ index page{
 
 signin page{
     -Make terms & conditions
-    -
+    -Ensure email used only once
+}
+
+admin page{
+    -connect add customer with in admin page with sign_up page
+    *implment artist page
+    *implment cattegory page
+    *combine add/remove galary pages
+    *edit transaction page
 }
 
 # In Progress:
