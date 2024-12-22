@@ -52,14 +52,14 @@ $sqlRecentBookings = "SELECT bookings.*, users.fname AS artist_name
                       ORDER BY created_at DESC LIMIT 5";
 $resultRecentBookings = mysqli_query($conn, $sqlRecentBookings);
 
-// Recent Reviews
-$sqlRecentReviews = "SELECT reviews.*, users.fname AS artist_name, customers.user_id AS customer_user_id
-                     FROM reviews
-                     JOIN artists ON reviews.artist_id = artists.id
+// Recent artist_artist_reviews
+$sqlRecentartist_reviews = "SELECT artist_reviews.*, users.fname AS artist_name, customers.user_id AS customer_user_id
+                     FROM artist_reviews
+                     JOIN artists ON artist_reviews.artist_id = artists.id
                      JOIN users ON artists.user_id = users.id
-                     JOIN customers ON reviews.customer_id = customers.id
+                     JOIN customers ON artist_reviews.customer_id = customers.id
                      ORDER BY created_at DESC LIMIT 5";
-$resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
+$resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
 ?>
 
 <!DOCTYPE html>
@@ -87,14 +87,14 @@ $resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
         <div class="statistics">
             <h3>Overview Statistics</h3>
             <ul>
-                <li>Total Admins: <?php echo $totalAdmins; ?></li>
-                <li>Total Artists: <?php echo $totalArtists; ?></li>
-                <li>Total Customers: <?php echo $totalCustomers; ?></li>
-                <li>Total Bookings: <?php echo $totalBookings; ?></li>
-                <li>Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
-                <li>Total Revenue: $<?php echo number_format($totalRevenue, 2); ?></li>
-                <li>Total Expenses: $<?php echo number_format($totalExpenses, 2); ?></li>
-                <li>Net Income: $<?php echo number_format($totalRevenue - $totalExpenses, 2); ?></li>
+                <li style="display: inline;">\\ Total Admins: <?php echo $totalAdmins; ?></li>
+                <li style="display: inline;">\\ Total Artists: <?php echo $totalArtists; ?></li>
+                <li style="display: inline;">\\ Total Customers: <?php echo $totalCustomers; ?></li>
+                <li style="display: inline;">\\ Total Bookings: <?php echo $totalBookings; ?></li>
+                <li style="display: inline;">\\ Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
+                <li style="display: inline;">\\ Total Revenue: $<?php echo number_format($totalRevenue, 2); ?></li>
+                <li style="display: inline;">\\ Total Expenses: $<?php echo number_format($totalExpenses, 2); ?></li>
+                <li style="display: inline;">\\ Net Income: $<?php echo number_format($totalRevenue - $totalExpenses, 2); ?></li>
             </ul>
         </div>
 
@@ -102,11 +102,11 @@ $resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
         <div class="controls">
             <h3>Controls</h3>
             <ul>
-                <li><a href="add_new_artist.php">Manage Artists</a></li>
+                <li><a href="manage_artists.php">Manage Artists</a></li>
                 <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
                 <li><a href="manage_bookings.php">Manage Bookings</a></li>
                 <li><a href="manage_categories.php">Manage Categories</a></li>
-                <li><a href="add_transaction.php">Manage Transactions</a></li>
+                <li><a href="manage_customers.php">Manage Customers</a></li>
             </ul>
         </div>
 
@@ -141,7 +141,7 @@ $resultRecentReviews = mysqli_query($conn, $sqlRecentReviews);
                     <th>Comment</th>
                     <th>Date</th>
                 </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultRecentReviews)) : ?>
+                <?php while ($row = mysqli_fetch_assoc($resultRecentartist_reviews)) : ?>
                     <tr>
                         <td><?php echo $row['customer_user_id']; ?></td>
                         <td><?php echo $row['artist_name']; ?></td>

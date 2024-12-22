@@ -114,7 +114,7 @@ $resultTattoos = mysqli_query($conn, $sqlTattoos);
             </form>
         </div>
 
-        <a class="back-link" href="admin.php">Back to Dashboard</a>
+        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
     </div>
 
     <?php include 'footer.php'; ?>

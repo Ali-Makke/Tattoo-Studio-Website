@@ -19,15 +19,15 @@ $sqlArtists = "SELECT artists.*, users.fname as artist_fname
                JOIN users ON artists.id = users.id;";
 $resultArtists = mysqli_query($conn, $sqlArtists);
 
-// Fetch reviews
-$sqlReviews = "SELECT reviews.*, customers.id AS customer_id, users.fname AS customer_fname, artists.id AS artist_id, users2.fname AS artist_fname
-               FROM reviews
-               JOIN customers ON reviews.customer_id = customers.id
+// Fetch artist_reviews
+$sqlartist_reviews = "SELECT artist_reviews.*, customers.id AS customer_id, users.fname AS customer_fname, artists.id AS artist_id, users2.fname AS artist_fname
+               FROM artist_reviews
+               JOIN customers ON artist_reviews.customer_id = customers.id
                JOIN users AS users ON customers.user_id = users.id
-               JOIN artists ON reviews.artist_id = artists.id
+               JOIN artists ON artist_reviews.artist_id = artists.id
                JOIN users AS users2 ON artists.user_id = users2.id
-               ORDER BY reviews.created_at DESC";
-$resultReviews = mysqli_query($conn, $sqlReviews);
+               ORDER BY artist_reviews.created_at DESC";
+$resultartist_reviews = mysqli_query($conn, $sqlartist_reviews);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_artist_account'])) {
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if (empty($errorMessage)) {
                 $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
-                $sqlAddUserArtist = "INSERT INTO users (fname, lname, email, password) VALUES ('$fname', '$lname', '$email', '$passwordHashed')";
+                $sqlAddUserArtist = "INSERT INTO users (fname, lname, email, password, role_id) VALUES ('$fname', '$lname', '$email', '$passwordHashed', 3)";
                 if (mysqli_query($conn, $sqlAddUserArtist)) {
                     $successMessage = "Artist account added successfully.";
                 } else {
@@ -61,15 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['edit_artist_bio'])) {
         $artistId = $_POST['artist_id'];
         $bio = test_input($_POST['bio']);
-        $sqlAddArtist = "UPDATE artists SET bio = '$bio' WHERE id = '$artistId'";
-        if (mysqli_query($conn, $sqlAddArtist)) {
+        $sqlUpdateBio = "UPDATE artists SET bio = '$bio' WHERE id = '$artistId'";
+        if (mysqli_query($conn, $sqlUpdateBio)) {
             $successMessage = "Biography updated successfully.";
         } else {
             $errorMessage = "Database error: " . mysqli_error($conn);
         }
     } elseif (isset($_POST['delete_review'])) {
         $reviewId = $_POST['review_id'];
-        $sqlDeleteReview = "DELETE FROM reviews WHERE id = $reviewId";
+        $sqlDeleteReview = "DELETE FROM artist_reviews WHERE id = $reviewId";
         if (mysqli_query($conn, $sqlDeleteReview)) {
             $successMessage = "Review deleted successfully.";
         } else {
@@ -149,8 +149,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </section>
 
-        <!-- Manage Reviews -->
-        <section class="manage-reviews">
+        <!-- Manage artist_reviews -->
+        <section class="manage-artist_reviews">
             <h3>Reviews</h3>
             <table border="1" class="table">
                 <tr>
@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Rating</th>
                     <th>Actions</th>
                 </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultReviews)) { ?>
+                <?php while ($row = mysqli_fetch_assoc($resultartist_reviews)) { ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['artist_fname']); ?></td>
                         <td><?php echo htmlspecialchars($row['customer_fname']); ?></td>
@@ -176,8 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php } ?>
             </table>
         </section>
-
-        <a class="logout-link" href="logout.php">Logout</a>
+        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
     </div>
     <?php include 'footer.php'; ?>
 </body>

@@ -1,13 +1,14 @@
 <?php
 session_start();
-include 'db_connect.php';
+require 'db_connect.php';
+require 'common_functions.php';
 
 $fname = $lname = $femail = $fpassword = "";
 $ferr = $nameErr = $femailErr = $fpasswordErr = $fpassErr = "";
 $lemail = $lpassword = "";
 $lerr = $lemailErr = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($_POST['form_id'] == "signup") {
         if (empty(trim($_POST["fname"])) || empty(trim($_POST["lname"])) || empty(trim($_POST["femail"])) || empty(trim($_POST["fpassword"]))) {
             $ferr = "---All fields are required---";
@@ -62,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['role_txt'] = $user['role_txt'];
 
                     if ($user['role_txt'] == 'admin') {
-                        header("Location: admin.php");
+                        header("Location: admin_dashboard.php");
                     } else if ($user['role_txt'] == 'customer') {
                         header("Location: user.php");
                     } else {
@@ -78,40 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 mysqli_close($conn);
-
-function test_input($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
-function isValidPassword($password)
-{
-    $errors = [];
-    // Check for at least one letter
-    if (!preg_match('/[a-zA-Z]/', $password)) {
-        $errors[] = "Password must contain at least one letter.";
-    }
-
-    // Check for at least one number
-    if (!preg_match('/[0-9]/', $password)) {
-        $errors[] = "Password must contain at least one number.";
-    }
-
-    // Check for at least one non-alphanumeric character
-    if (!preg_match('/[^a-zA-Z0-9]/', $password)) {
-        $errors[] = "Password must contain at least one special character.";
-    }
-
-    // Check for at least 8 characters long
-    if (!preg_match('/^.{8,}$/', $password)) {
-        $errors[] = "Password must be at least 8 characters long.";
-    }
-
-    return $errors;
-}
 ?>
 
 <!DOCTYPE html>

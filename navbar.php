@@ -14,7 +14,7 @@
         <?php
         if (isset($_SESSION['email'])) {
             if (is_admin()) {
-                echo '<li><a href="admin.php">Admin</a></li>';
+                echo '<li><a href="admin_dashboard.php">Admin</a></li>';
             } else if(is_user()){
                 echo '<li><a href="user.php">User</a></li>';
             }else{
