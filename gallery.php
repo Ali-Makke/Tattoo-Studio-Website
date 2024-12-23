@@ -2,11 +2,11 @@
 include 'authentication_check.php';
 require 'db_connect.php';
 
-$sqlCategories = "SELECT DISTINCT categories.id, categories.name 
+$sqlTattooImages = "SELECT DISTINCT categories.id, categories.name
                   FROM categories 
-                  JOIN gallery ON categories.id = gallery.category_id";
-$resultCategories = mysqli_query($conn, $sqlCategories);
-
+                  JOIN tattoos ON categories.id = tattoos.category_id
+                  WHERE is_gallery_image = 'yes'";
+$resultTattooImages = mysqli_query($conn, $sqlTattooImages);
 ?>
 
 <!DOCTYPE html>
@@ -29,19 +29,23 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
         </header>
         <div class="container">
             <?php
-            while ($category = mysqli_fetch_assoc($resultCategories)) {
-                echo "<h2>" . htmlspecialchars($category['name']) . "</h2>";
-                $categoryId = $category['id'];
-                $sqlGallery = "SELECT * FROM gallery WHERE category_id = '$categoryId'";
-                $resultGallery = mysqli_query($conn, $sqlGallery);
-
-                echo "<div class='gallery'>";
-                while ($image = mysqli_fetch_assoc($resultGallery)) {
-                    echo "<div class='gallery-item'>";
-                    echo "<img src='" . htmlspecialchars($image['image_url']) . "' alt='" . htmlspecialchars($image['description']) . "'>";
+            if (mysqli_num_rows($resultTattooImages) > 0) {
+                while ($category = mysqli_fetch_assoc($resultTattooImages)) {
+                    echo "<h2>" . htmlspecialchars($category['name']) . "</h2>";
+                    $categoryId = $category['id'];
+                    $sqlGallery = "SELECT * FROM tattoos WHERE category_id = '$categoryId' && is_gallery_image = 'yes'";
+                    $resultGallery = mysqli_query($conn, $sqlGallery);
+                    
+                    echo "<div class='gallery'>";
+                    while ($image = mysqli_fetch_assoc($resultGallery)) {
+                        echo "<div class='gallery-item'>";
+                        echo "<img src='" . htmlspecialchars($image['finished_tattoo_url']) . "' alt='" . htmlspecialchars($image['description']) . "'>";
+                        echo "</div>";
+                    }
                     echo "</div>";
                 }
-                echo "</div>";
+            } else {
+                echo "<br><h1 style='text-align: center'>No Ink Here <br>\-(0-0)-/</h1><br><br>";
             }
             ?>
         </div>

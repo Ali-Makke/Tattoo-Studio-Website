@@ -13,23 +13,23 @@ while ($row = mysqli_fetch_assoc($resultArtists)) {
     $artists[] = $row;
 }
 
-$pendingBookings = [];
+$completeBookings = [];
 if (isset($_GET['artist_id'])) {
     $artistId = $_GET['artist_id'];
-    $sqlPendingBookings = "SELECT bookings.id AS booking_id, users.fname AS customer_fname, users.lname AS customer_lname
+    $sqlCompleteBookings = "SELECT bookings.id AS booking_id, users.fname AS customer_fname, users.lname AS customer_lname
                            FROM bookings
                            JOIN customers ON bookings.customer_id = customers.id
                            JOIN users ON customers.user_id = users.id
                            WHERE bookings.artist_id = $artistId AND bookings.status = 'done'";
-    $resultPendingBookings = mysqli_query($conn, $sqlPendingBookings);
-    while ($row = mysqli_fetch_assoc($resultPendingBookings)) {
-        $pendingBookings[] = $row;
+    $resultCompleteBookings = mysqli_query($conn, $sqlCompleteBookings);
+    while ($row = mysqli_fetch_assoc($resultCompleteBookings)) {
+        $completeBookings[] = $row;
     }
 }
 
 $sqlCategories = "SELECT id, name FROM categories";
 $resultCategories = mysqli_query($conn, $sqlCategories);
-$message = 'test';
+$message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $booking_id = test_input($_POST['booking_id']);
@@ -106,7 +106,7 @@ mysqli_close($conn);
                 <label for="booking_id">Select Booking:</label>
                 <select name="booking_id" id="booking_id" required>
                     <option value="">--Select Booking--</option>
-                    <?php foreach ($pendingBookings as $booking) { ?>
+                    <?php foreach ($completeBookings as $booking) { ?>
                         <option value="<?php echo $booking['booking_id']; ?>">
                             <?php echo htmlspecialchars($booking['booking_id'] . ' - ' . $booking['customer_fname'] . ' ' . $booking['customer_lname']); ?>
                         </option>

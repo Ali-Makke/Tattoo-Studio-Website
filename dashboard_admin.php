@@ -6,13 +6,11 @@ require 'db_connect.php';
 $currentMonth = date('m');
 
 // Total Users
-$sqlUsers = "SELECT 
-                (SELECT COUNT(*) FROM users WHERE role_id = 1) AS admins,
+$sqlUsers = "SELECT
                 (SELECT COUNT(*) FROM users WHERE role_id = 2) AS customers,
                 (SELECT COUNT(*) FROM users WHERE role_id = 3) AS artists";
 $resultUsers = mysqli_query($conn, $sqlUsers);
 $rowUsers = mysqli_fetch_assoc($resultUsers);
-$totalAdmins = $rowUsers['admins'];
 $totalArtists = $rowUsers['artists'];
 $totalCustomers = $rowUsers['customers'];
 
@@ -28,23 +26,12 @@ $resultPayments = mysqli_query($conn, $sqlPayments);
 $rowPayments = mysqli_fetch_assoc($resultPayments);
 $totalPayments = $rowPayments['total_payments'] ?? 0;
 
-// Total Revenue
-$sqlRevenue = "SELECT SUM(amount) AS total_revenue FROM transactions WHERE type = 'revenue'";
-$resultRevenue = mysqli_query($conn, $sqlRevenue);
-$rowRevenue = mysqli_fetch_assoc($resultRevenue);
-$totalRevenue = $rowRevenue['total_revenue'] ?? 0;
-
-// Total Expenses
-$sqlExpenses = "SELECT SUM(amount) AS total_expenses FROM transactions WHERE type = 'expense'";
-$resultExpenses = mysqli_query($conn, $sqlExpenses);
-$rowExpenses = mysqli_fetch_assoc($resultExpenses);
-$totalExpenses = $rowExpenses['total_expenses'] ?? 0;
-
 // Recent Bookings
 $sqlRecentBookings = "SELECT bookings.*, users.fname AS artist_name 
-                      FROM bookings 
-                      JOIN users ON bookings.artist_id = users.id 
-                      ORDER BY created_at DESC LIMIT 5";
+FROM bookings
+JOIN artists ON bookings.artist_id = artists.id
+JOIN users ON artists.user_id = users.id
+ORDER BY created_at DESC LIMIT 10";
 $resultRecentBookings = mysqli_query($conn, $sqlRecentBookings);
 
 // Recent artist_artist_reviews
@@ -53,7 +40,7 @@ $sqlRecentartist_reviews = "SELECT artist_reviews.*, users.fname AS artist_name,
                      JOIN artists ON artist_reviews.artist_id = artists.id
                      JOIN users ON artists.user_id = users.id
                      JOIN customers ON artist_reviews.customer_id = customers.id
-                     ORDER BY created_at DESC LIMIT 5";
+                     ORDER BY created_at DESC LIMIT 10";
 $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
 ?>
 
@@ -77,19 +64,15 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
 
         <h2 class="heading">Admin Dashboard</h2>
         <p class="welcome">Welcome, <?php echo $_SESSION['fname']; ?>. You are logged in as an admin.</p>
-        
+
         <!-- Overview Statistics -->
         <div class="statistics">
             <h3>Overview Statistics</h3>
             <ul>
-                <li style="display: inline;">\\ Total Admins: <?php echo $totalAdmins; ?></li>
-                <li style="display: inline;">\\ Total Artists: <?php echo $totalArtists; ?></li>
-                <li style="display: inline;">\\ Total Customers: <?php echo $totalCustomers; ?></li>
-                <li style="display: inline;">\\ Total Bookings: <?php echo $totalBookings; ?></li>
-                <li style="display: inline;">\\ Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
-                <li style="display: inline;">\\ Total Revenue: $<?php echo number_format($totalRevenue, 2); ?></li>
-                <li style="display: inline;">\\ Total Expenses: $<?php echo number_format($totalExpenses, 2); ?></li>
-                <li style="display: inline;">\\ Net Income: $<?php echo number_format($totalRevenue - $totalExpenses, 2); ?></li>
+                <li>Total Artists: <?php echo $totalArtists; ?></li>
+                <li>Total Customers: <?php echo $totalCustomers; ?></li>
+                <li>Total Bookings: <?php echo $totalBookings; ?></li>
+                <li>Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
             </ul>
         </div>
 
@@ -152,7 +135,7 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
         </div>
         <a class="logout-link" href="logout.php">Logout</a>
     </div>
-    
+
     <?php include 'footer.php'; ?>
 </body>
 

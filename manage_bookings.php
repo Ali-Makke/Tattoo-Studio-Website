@@ -73,7 +73,8 @@ FROM
 LEFT JOIN customers ON bookings.customer_id = customers.id
 LEFT JOIN users AS users ON customers.user_id = users.id
 LEFT JOIN artists ON bookings.artist_id = artists.id
-LEFT JOIN users AS users2 ON artists.user_id = users2.id";
+LEFT JOIN users AS users2 ON artists.user_id = users2.id
+WHERE 1";
 
 if ($statusFilter) {
     $sqlFetchBookings .= " AND bookings.status = '$statusFilter'";
