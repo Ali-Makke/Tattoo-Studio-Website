@@ -3,11 +3,6 @@ require 'authentication_check.php';
 require_admin_access();
 require 'db_connect.php';
 
-if (!is_admin()) {
-    header("Location: user.php");
-    exit();
-}
-
 $currentMonth = date('m');
 
 // Total Users
@@ -103,10 +98,13 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
             <h3>Controls</h3>
             <ul>
                 <li><a href="manage_artists.php">Manage Artists</a></li>
-                <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
-                <li><a href="manage_bookings.php">Manage Bookings</a></li>
-                <li><a href="manage_categories.php">Manage Categories</a></li>
                 <li><a href="manage_customers.php">Manage Customers</a></li>
+                <li><a href="manage_bookings.php">Manage Bookings</a></li>
+                <li><a href="manage_artist_schedules.php">Manage Artist Schedules</a></li>
+                <li><a href="manage_categories.php">Manage Categories</a></li>
+                <li><a href="manage_tattoos.php">Manage Completed Tattoos</a></li>
+                <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
+                <li><a href="manage_payments.php">Manage Payments</a></li>
             </ul>
         </div>
 

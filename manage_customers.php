@@ -4,11 +4,6 @@ require_admin_access();
 require 'db_connect.php';
 require 'common_functions.php';
 
-if (!is_admin()) {
-    header("Location: user.php");
-    exit();
-}
-
 // Fetch customers and their associated data
 $sqlCustomers = "SELECT customers.*, users.fname, users.lname, users.email, users.account_status as status
                  FROM customers
@@ -16,13 +11,14 @@ $sqlCustomers = "SELECT customers.*, users.fname, users.lname, users.email, user
 $resultCustomers = mysqli_query($conn, $sqlCustomers);
 
 // Fetch customer bookings and history
-$sqlBookings = "SELECT bookings.*, tattoos.description, tattoos.date_finished, artists.id AS artist_id, users.fname AS artist_fname
-                FROM bookings
-                LEFT JOIN tattoos ON bookings.id = tattoos.booking_id
-                LEFT JOIN artists ON tattoos.artist_id = artists.id
-                LEFT JOIN users ON artists.user_id = users.id
-                WHERE bookings.customer_id = ?
-                ORDER BY bookings.preferred_dates DESC";
+if (isset($_GET['customer_id'])) {
+    $customerId = intval($_GET['customer_id']);
+    $sqlBookings = "SELECT bookings.*, tattoos.description AS tattoo_description
+                                FROM bookings
+                                LEFT JOIN tattoos ON bookings.id = tattoos.booking_id
+                                WHERE bookings.customer_id = $customerId";
+    $resultBookings = mysqli_query($conn, $sqlBookings);
+}
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -107,12 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php
             if (isset($_GET['customer_id'])) {
-                $customerId = intval($_GET['customer_id']);
-                $sqlBookings = "SELECT bookings.*, tattoos.description AS tattoo_description
-                                FROM bookings
-                                LEFT JOIN tattoos ON bookings.id = tattoos.booking_id
-                                WHERE bookings.customer_id = $customerId";
-                $resultBookings = mysqli_query($conn, $sqlBookings);
                 if (mysqli_num_rows($resultBookings) > 0) {
                     echo '<table border="1" class="table">';
                     echo '<tr><th>Status</th><th>Preferred Dates</th><th>Preferred Times</th><th>Tattoo Description</th></tr>';
@@ -132,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?>
         </section>
 
-        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
+        <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>
     </div>
     <?php include 'footer.php'; ?>
 </body>

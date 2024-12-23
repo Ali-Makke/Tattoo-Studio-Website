@@ -14,11 +14,11 @@
         <?php
         if (isset($_SESSION['email'])) {
             if (is_admin()) {
-                echo '<li><a href="admin_dashboard.php">Admin</a></li>';
-            } else if(is_user()){
-                echo '<li><a href="user.php">User</a></li>';
+                echo '<li><a href="dashboard_admin.php">Admin</a></li>';
+            } else if(is_artist()){
+                echo '<li><a href="dashboard_artist.php">Profile</a></li>';
             }else{
-                echo '<li><a href="profile.php">Profile</a></li>';
+                echo '<li><a href="dashboard_customer.php">Profile</a></li>';
             }
         } else {
             echo '<li><a href="sign-up.php">Register</a></li>';

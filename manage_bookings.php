@@ -3,42 +3,57 @@ require 'authentication_check.php';
 require_admin_access();
 require 'db_connect.php';
 
-if (!is_admin()) {
-    header("Location: user.php");
-    exit();
-}
-
 // Update Booking Status
-if (isset($_POST['update_status'])) {
-    $bookingId = $_POST['booking_id'];
-    $newStatus = $_POST['status'];
-    $sqlUpdateStatus = "UPDATE bookings SET status = '$newStatus' WHERE id = $bookingId";
-    mysqli_query($conn, $sqlUpdateStatus);
-}
-
-// Reassign Artist
-if (isset($_POST['reassign_artist'])) {
+// if (isset($_POST['update_status'])) {
+//     $bookingId = $_POST['booking_id'];
+//     $newStatus = $_POST['status'];
+//     $sqlUpdateStatus = "UPDATE bookings SET status = '$newStatus' WHERE id = $bookingId";
+//     mysqli_query($conn, $sqlUpdateStatus);
+// }
+// Assign Artist with schedule
+if (isset($_POST['assign_artist'])) {
     $bookingId = $_POST['booking_id'];
     $artistId = $_POST['artist_id'];
-    $sqlReassignArtist = "UPDATE bookings SET artist_id = $artistId WHERE id = $bookingId";
+
+    if (isset($_POST['status']) && $_POST['status'] == 'pending') {
+        $newDate = $_POST['reschedule_date'];
+        $newTime = $_POST['reschedule_time'];
+        $newDateTime = $newDate . ' ' . $newTime;
+        $currentDateTime = new DateTime();
+        $selectedDateTime = new DateTime($newDateTime);
+
+        if ($selectedDateTime <= $currentDateTime) {
+            $message = "The selected date and time must be in the future.";
+            $_SESSION['message'] = $message;
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        }
+        
+        $newSchedule = "INSERT INTO artist_schedules (`date`,`time`,`session_status`,`artist_id`,`booking_id`) 
+                                VALUES ('$newDate', '$newTime', 'scheduled', '$artistId', '$bookingId')";
+        mysqli_query($conn, $newSchedule);
+    }
+    $sqlReassignArtist = "UPDATE bookings SET artist_id = '$artistId', status = 'approved' WHERE id = '$bookingId'";
     mysqli_query($conn, $sqlReassignArtist);
 }
 
-// Reschedule Booking
-if (isset($_POST['reschedule_booking'])) {
+// Cancel Booking
+if (isset($_POST['cancel_booking'])) {
     $bookingId = $_POST['booking_id'];
-    $newDate = $_POST['reschedule_date'];
-    $newTime = $_POST['reschedule_time'];
-    $sqlReschedule = "UPDATE bookings SET dates = '$newDate', times = '$newTime' WHERE id = $bookingId";
-    mysqli_query($conn, $sqlReschedule);
+    $sqlcancelBooking = "UPDATE bookings SET status = 'canceled' WHERE id = $bookingId";
+    mysqli_query($conn, $sqlcancelBooking);
 }
 
-// Delete Booking
-if (isset($_POST['delete_booking'])) {
-    $bookingId = $_POST['booking_id'];
-    $sqlDeleteBooking = "DELETE FROM bookings WHERE id = $bookingId";
-    mysqli_query($conn, $sqlDeleteBooking);
-}
+// Restore Booking
+// if (isset($_POST['restore_booking'])) {
+//     $bookingId = $_POST['booking_id'];
+//     $date = $_POST['date'];
+//     $time = $_POST['time'];
+//     $sqlRestoreBooking = "UPDATE bookings
+//                           SET status = 'pending' 
+//                           WHERE id = '$bookingId'";
+//     mysqli_query($conn, $sqlRestoreBooking);
+// }
 
 // Fetch Bookings
 $statusFilter = isset($_GET['status']) ? $_GET['status'] : '';
@@ -80,8 +95,16 @@ $sqlArtists = "SELECT artists.id, users.fname, users.lname
 $resultArtists = mysqli_query($conn, $sqlArtists);
 
 // Fetch Customers for Filters
-$sqlCustomers = "SELECT users.id, users.fname, users.lname FROM users WHERE role_id = 2";
+$sqlCustomers = "SELECT customers.id, users.fname, users.lname 
+                 FROM customers
+                 JOIN users ON customers.user_id = users.id";
 $resultCustomers = mysqli_query($conn, $sqlCustomers);
+
+if (isset($_SESSION['message'])) {
+    $escapedMessage = htmlspecialchars($_SESSION['message'], ENT_QUOTES, 'UTF-8');
+    echo '<script>alert("' . $escapedMessage . '");</script>';
+    unset($_SESSION['message']);
+}
 
 ?>
 <!DOCTYPE html>
@@ -165,52 +188,50 @@ $resultCustomers = mysqli_query($conn, $sqlCustomers);
                         </td>
                         <td><?php echo ucfirst($row['status']); ?></td>
                         <td>
-                            <!-- Update Status -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                <select name="status">
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="done">Done</option>
-                                    <option value="canceled">Canceled</option>
-                                </select>
-                                <button type="submit" name="update_status">Update</button>
-                            </form>
-                            <br>
-                            <!-- Reassign Artist -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                <select name="artist_id">
-                                    <?php
-                                    mysqli_data_seek($resultArtists, 0);
-                                    while ($artist = mysqli_fetch_assoc($resultArtists)) {
-                                        echo "<option value='{$artist['id']}'>{$artist['fname']} {$artist['lname']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                                <button type="submit" name="reassign_artist">Reassign</button>
-                            </form>
-                            <br>
-                            <!-- Reschedule Booking -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                <input type="date" name="reschedule_date" required>
-                                <input type="time" name="reschedule_time" required>
-                                <button type="submit" name="reschedule_booking">Reschedule</button>
-                            </form>
-                            <br>
-                            <!-- Delete Booking -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                <button type="submit" name="delete_booking" onclick="return confirm('Are you sure?');">Delete</button>
-                            </form>
+                            <?php if ($row['status'] != 'done' && $row['status'] != 'canceled') { ?>
+                                <!-- Assign To Artist -->
+                                <?php if ($row['status'] == 'pending' || $row['status'] == 'approved') { ?>
+                                    <form method="POST" style="display: inline-block;">
+                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                        <select name="artist_id" required>
+                                            <option value="">-- Assign Booking --</option>
+                                            <?php
+                                            mysqli_data_seek($resultArtists, 0);
+                                            while ($artist = mysqli_fetch_assoc($resultArtists)) {
+                                                echo "<option value='{$artist['id']}'>{$artist['fname']} {$artist['lname']}</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <br>
+                                        <!-- Schedule Booking -->
+                                        <?php if ($row['status'] == 'pending') { ?>
+                                            <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
+                                            <input type="time" name="reschedule_time" required>
+                                        <?php } ?>
+                                        <br>
+                                        <button type="submit" name="assign_artist" onclick="return confirm('Are you sure?');">Assign</button>
+                                    </form>
+                                <?php } ?>
+
+                                <br><br>
+
+                                <!-- Cancel Booking -->
+                                <?php if ($row['status'] == 'pending') { ?>
+                                    <form method="POST" style="display: inline-block;">
+                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                        <button type="submit" name="cancel_booking" onclick="return confirm('Are you sure?');">Cancel Booking</button>
+                                    </form>
+                                <?php } ?>
+                            <?php } else {
+                                echo "This booking has been" . '<br>' . "completed or canceled.";
+                            } ?>
                         </td>
                     </tr>
                 <?php endwhile; ?>
             </table>
         </div>
 
-        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
+        <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>
     </div>
 </body>
 

@@ -63,11 +63,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION['role_txt'] = $user['role_txt'];
 
                     if ($user['role_txt'] == 'admin') {
-                        header("Location: admin_dashboard.php");
-                    } else if ($user['role_txt'] == 'customer') {
-                        header("Location: user.php");
+                        header("Location: dashboard_admin.php");
+                    } else if ($user['role_txt'] == 'artist') {
+                        header("Location: dashboard_artist.php");
                     } else {
-                        header("Location: profile.php");
+                        header("Location: dashboard_customer.php");
                     }
                     exit();
                 } else {

@@ -3,10 +3,6 @@ require 'authentication_check.php';
 require_admin_access();
 require 'db_connect.php';
 
-if (!is_admin()) {
-    header("Location: user.php");
-    exit();
-}
 
 // Add New Image to gallery page
 if (isset($_POST['add_image'])) {
@@ -156,7 +152,7 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
             </table>
         </div>
 
-        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
+        <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>
     </div>
 </body>
 

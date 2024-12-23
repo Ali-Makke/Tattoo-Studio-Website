@@ -4,19 +4,46 @@ require_admin_access();
 require 'db_connect.php';
 require 'common_functions.php';
 
-if (!is_admin()) {
-    header("Location: user.php");
-    exit();
+$fname = $lname = $email = $password = "";
+$successMessage = $errorMessage = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['artist_permissions'])) {
+    foreach ($_POST['artist_permissions'] as $artistId => $permissions) {
+        $canViewEarnings = isset($permissions['can_view_earnings']) ? 1 : 0;
+        $canUpdateBookingStatus = isset($permissions['can_update_booking_status']) ? 1 : 0;
+        $canManageSchedules = isset($permissions['can_manage_schedules']) ? 1 : 0;
+
+        $sqlUpdatePermissions = "
+            UPDATE artist_permissions 
+            SET 
+                can_view_earnings = $canViewEarnings,
+                can_update_booking_status = $canUpdateBookingStatus,
+                can_manage_schedules = $canManageSchedules
+            WHERE artist_id = $artistId";
+        mysqli_query($conn, $sqlUpdatePermissions);
+    }
+
+    $successMessage = "Permissions updated successfully!";
 }
 
-$fname = $lname = $email = $password = "";
-$ferr = $nameErr = $emailErr = $passwordErr = $passErr = "";
-$successMessage = $errorMessage = "";
+// Fetch all artists and their permissions
+$sqlArtists = "
+    SELECT 
+        artists.id AS artist_id, 
+        users.fname, 
+        users.email, 
+        ap.can_view_earnings, 
+        ap.can_update_booking_status, 
+        ap.can_manage_schedules
+    FROM artists
+    JOIN users ON artists.user_id = users.id
+    JOIN artist_permissions ap ON ap.artist_id = artists.id";
+$resultArtistsPermissions = mysqli_query($conn, $sqlArtists);
 
 // Fetch artists
 $sqlArtists = "SELECT artists.*, users.fname as artist_fname
                FROM artists
-               JOIN users ON artists.id = users.id;";
+               JOIN users ON artists.user_id = users.id;";
 $resultArtists = mysqli_query($conn, $sqlArtists);
 
 // Fetch artist_reviews
@@ -88,14 +115,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="styles/admin.css">
     <link rel="stylesheet" href="styles/included.css">
     <script>
-        // Display alerts for errors or success messages
-        window.onload = function () {
+        window.onload = function() {
             const errorMessage = "<?php echo addslashes($errorMessage); ?>";
             const successMessage = "<?php echo addslashes($successMessage); ?>";
             if (errorMessage) alert(errorMessage);
             if (successMessage) alert(successMessage);
         };
     </script>
+    <style>
+        section {
+            margin-bottom: 3%;
+        }
+    </style>
 </head>
 
 <body>
@@ -106,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2 class="heading">Manage Artists</h2>
 
         <!-- Artist List -->
-        <section class="artist-list">
+        <section>
             <h3>Artists</h3>
             <table border="1" class="table">
                 <tr>
@@ -132,25 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
         </section>
 
-        <!-- Add Artist -->
-        <section class="add-artist">
-            <h3>Add Artist Account</h3>
-            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                <label for="fname">First name:</label>
-                <input type="text" name="fname" id="fname" placeholder="Firstname" required>
-                <label for="lname">Last name:</label>
-                <input type="text" name="lname" id="lname" placeholder="Lastname" required>
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" placeholder="Email" required>
-                <br>
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required>
-                <button type="submit" name="add_artist_account">Add Artist Account</button>
-            </form>
-        </section>
-
         <!-- Manage artist_reviews -->
-        <section class="manage-artist_reviews">
+        <section>
             <h3>Reviews</h3>
             <table border="1" class="table">
                 <tr>
@@ -176,7 +190,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php } ?>
             </table>
         </section>
-        <a class="back-link" href="admin_dashboard.php">Back to Dashboard</a>
+
+        <!-- Manage artist permissions -->
+        <section>
+            <h3>Manage Artist Permissions</h3>
+            <form method="post" action="">
+                <table border=1 class="table">
+                    <thead>
+                        <tr>
+                            <th>Artist</th>
+                            <th>Email</th>
+                            <th>Can View Earnings</th>
+                            <th>Can Update Bookings</th>
+                            <th>Can Manage Schedules</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($artist = mysqli_fetch_assoc($resultArtistsPermissions)) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($artist['fname']); ?></td>
+                                <td><?php echo htmlspecialchars($artist['email']); ?></td>
+                                <td>
+                                    <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_view_earnings]"
+                                        <?php echo $artist['can_view_earnings'] ? 'checked' : ''; ?>>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_update_booking_status]"
+                                        <?php echo $artist['can_update_booking_status'] ? 'checked' : ''; ?>>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_manage_schedules]"
+                                        <?php echo $artist['can_manage_schedules'] ? 'checked' : ''; ?>>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+                <button type="submit">Update Permissions</button>
+            </form>
+        </section>
+
+        <!-- Add Artist -->
+        <section>
+            <h3>Add Artist Account</h3>
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <label for="fname">First name:</label>
+                <input type="text" name="fname" id="fname" placeholder="Firstname" required>
+                <label for="lname">Last name:</label>
+                <input type="text" name="lname" id="lname" placeholder="Lastname" required>
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" placeholder="Email" required>
+                <br>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required>
+                <button type="submit" name="add_artist_account">Add Artist Account</button>
+            </form>
+        </section>
+        <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>
     </div>
     <?php include 'footer.php'; ?>
 </body>
