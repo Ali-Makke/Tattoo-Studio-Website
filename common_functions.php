@@ -53,7 +53,7 @@ function uploadImage($fileKey)
     }
 
     // Retrieve file details
-    $originalFileName = basename($_FILES[$fileKey]["name"]);
+    $originalFileName = htmlspecialchars(basename($_FILES[$fileKey]["name"]));
     $imageFileType = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
     $baseFileName = pathinfo($originalFileName, PATHINFO_FILENAME);
 

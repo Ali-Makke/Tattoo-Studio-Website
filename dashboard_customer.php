@@ -21,7 +21,7 @@ $resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InkVibe | User Dashboard</title>
+    <title>InkVibe | Customer Dashboard</title>
     <link rel="stylesheet" href="styles/included.css">
     <link rel="stylesheet" href="styles/admin.css">
     <script defer src="scripts/included.js"></script>
@@ -31,7 +31,7 @@ $resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
     <div class="container">
         <header>
             <?php include 'navbar.php'; ?>
-            <h2 class="heading">User Dashboard</h2>
+            <h2 class="heading">Customer Dashboard</h2>
         </header>
         <p>Welcome, <?php echo $_SESSION['fname']; ?>.</p>
         
