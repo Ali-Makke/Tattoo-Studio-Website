@@ -9,6 +9,7 @@ $lemail = $lpassword = "";
 $lerr = $lemailErr = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $userId = uniqid();
     if ($_POST['form_id'] == "signup") {
         if (empty(trim($_POST["fname"])) || empty(trim($_POST["lname"])) || empty(trim($_POST["femail"])) || empty(trim($_POST["fpassword"]))) {
             $ferr = "---All fields are required---";
@@ -31,9 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             if (empty($nameErr) && empty($femailErr) && empty($fpassErr)) {
                 $fpasswordHashed = password_hash($fpassword, PASSWORD_DEFAULT);
-                $sql = "INSERT INTO users (fname, lname, email, password) VALUES ('$fname', '$lname', '$femail', '$fpasswordHashed')";
-                if (!mysqli_query($conn, $sql)) {
-                    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+                $sqlAddUserCustomer = "INSERT INTO users (id, fname, lname, email, password) VALUES ('$userId', '$fname', '$lname', '$femail', '$fpasswordHashed')";
+                $sqlAddCustomer = "INSERT INTO customer (user_id) VALUES ('$userId')";
+                if (!mysqli_query($conn, $sqlAddUserCustomer)) {
+                    echo "Error: " . $sqlAddUserCustomer . "<br>" . mysqli_error($conn);
                 }
             }
         }

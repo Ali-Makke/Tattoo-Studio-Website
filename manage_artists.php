@@ -13,8 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['artist_permissions'])
         $canUpdateBookingStatus = isset($permissions['can_update_booking_status']) ? 1 : 0;
         $canManageSchedules = isset($permissions['can_manage_schedules']) ? 1 : 0;
 
-        $sqlUpdatePermissions = "
-            UPDATE artist_permissions 
+        $sqlUpdatePermissions = "UPDATE artist_permissions 
             SET 
                 can_view_earnings = $canViewEarnings,
                 can_update_booking_status = $canUpdateBookingStatus,
@@ -27,8 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['artist_permissions'])
 }
 
 // Fetch all artists and their permissions
-$sqlArtists = "
-    SELECT 
+$sqlArtists = "SELECT 
         artists.id AS artist_id, 
         users.fname, 
         users.email, 
@@ -57,6 +55,7 @@ $sqlartist_reviews = "SELECT artist_reviews.*, customers.id AS customer_id, user
 $resultartist_reviews = mysqli_query($conn, $sqlartist_reviews);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $userId = uniqid();
     if (isset($_POST['add_artist_account'])) {
         if (empty(trim($_POST["fname"])) || empty(trim($_POST["lname"])) || empty(trim($_POST["email"])) || empty(trim($_POST["password"]))) {
             $errorMessage = "All fields are required.";
@@ -77,8 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if (empty($errorMessage)) {
                 $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
-                $sqlAddUserArtist = "INSERT INTO users (fname, lname, email, password, role_id) VALUES ('$fname', '$lname', '$email', '$passwordHashed', 3)";
-                if (mysqli_query($conn, $sqlAddUserArtist)) {
+                $sqlAddUserArtist = "INSERT INTO users (id, fname, lname, email, password, role_id) VALUES ('$userId', '$fname', '$lname', '$email', '$passwordHashed', 3)";
+                $sqlAddArtist = "INSERT INTO artists (user_id) VALUES ('$userId')";
+                if (mysqli_query($conn, $sqlAddUserArtist) && mysqli_query($conn, $sqlAddArtist)) {
                     $successMessage = "Artist account added successfully.";
                 } else {
                     $errorMessage = "Database error: " . mysqli_error($conn);
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errorMessage = "Database error: " . mysqli_error($conn);
         }
-    }
+    }else {}
 }
 ?>
 <!DOCTYPE html>
@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>InkVibe | Manage Artists</title>
     <link rel="stylesheet" href="styles/admin.css">
     <link rel="stylesheet" href="styles/included.css">
+    <script defer src="scripts/included.js"></script>
     <script>
         window.onload = function() {
             const errorMessage = "<?php echo addslashes($errorMessage); ?>";

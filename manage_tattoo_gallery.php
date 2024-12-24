@@ -6,26 +6,25 @@ require 'db_connect.php';
 
 // Add New Image to gallery page
 if (isset($_POST['add_image'])) {
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $categoryId = $_POST['category_id'];
-    $imageUrl = $_POST['image_url'];
-    $sqlAddImage = "UPDATE tattoos SET is_gallery_image = 'yes', description = '$description'";
+    $tattooId = $_POST['image_id'];
+    $description = isset($_POST['description']) ? $_POST['description'] : '';
+    $sqlAddImage = "UPDATE tattoos SET is_gallery_image = 'yes', description = '$description' WHERE id = '$tattooId'";
     mysqli_query($conn, $sqlAddImage);
 }
 
-// Edit Tattoo Description
+// Edit Tattoo Description and Category
 if (isset($_POST['edit_image'])) {
-    $imageId = $_POST['image_id'];
+    $tattooId = $_POST['image_id'];
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $categoryId = $_POST['category_id'];
-    $sqlEditImage = "UPDATE tattoos SET description = '$description', category_id = $categoryId WHERE id = $imageId";
+    $sqlEditImage = "UPDATE tattoos SET description = '$description', category_id = $categoryId WHERE id = $tattooId";
     mysqli_query($conn, $sqlEditImage);
 }
 
 // Delete Image from gallery page
 if (isset($_POST['delete_image'])) {
-    $imageId = $_POST['image_id'];
-    $sqlDeleteImage = "UPDATE tattoos SET is_gallery_image = 'no'";
+    $tattooId = $_POST['image_id'];
+    $sqlDeleteImage = "UPDATE tattoos SET is_gallery_image = 'no' WHERE id = $tattooId";
     mysqli_query($conn, $sqlDeleteImage);
 }
 
@@ -83,23 +82,17 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
 
         <!-- Add New Image -->
         <div class="form-section">
-            <h3>Add New Image</h3>
+            <h3>Add Tattoo To Gallery</h3>
             <form method="POST">
                 <label for="image_url">Tattoo image:</label>
-                <select id="image_url" name="image_url" required>
-                    <option value=""></option>
+                <select id="image_url" name="image_id" required>
+                    <option value="">-- Select Tattoo --</option>
                     <?php while ($row = mysqli_fetch_assoc($resultTattos)) {
-                        echo "<option value=\"" . $row['id'] . "\" data-url=\"" . htmlspecialchars($row['finished_tattoo_url']) . "\">" . htmlspecialchars($row['finished_tattoo_url']) . "</option>";
+                        echo "<option value=\"" . $row['id'] . "\" data-url=\"" . htmlspecialchars($row['finished_tattoo_url']) . "\">" . $row['tattoo_id'] . htmlspecialchars($row['finished_tattoo_url']) . "</option>";
                     } ?>
                 </select>
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" required></textarea>
-                <label for="category_id">Category:</label>
-                <select id="category_id" name="category_id" required>
-                    <?php while ($row = mysqli_fetch_assoc($resultCategories)) {
-                        echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                    } ?>
-                </select>
+                <label for="description">Description(optional):</label>
+                <textarea id="description" name="description"></textarea>
                 <button type="submit" name="add_image">Add Image</button>
             </form>
         </div>
@@ -123,28 +116,28 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
                     <tr>
                         <td><?php echo $row['id']; ?></td>
                         <td><img src="<?php echo $row['finished_tattoo_url']; ?>" alt="Tattoo Image" width="100"></td>
-                        <td><?php echo $row['description']; ?></td>
+                        <td><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
                         <td><?php echo $row['category_name']; ?></td>
                         <td>
-                            <!-- Edit Form -->
+                            <!-- Edit category and description -->
                             <form method="POST" style="display: inline-block;">
                                 <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
                                 <input type="text" name="description" placeholder="Edit Description" required>
                                 <select name="category_id" required>
                                     <?php
-                                    mysqli_data_seek($resultCategories, 0); // Reset Categories Pointer
+                                    mysqli_data_seek($resultCategories, 0);
                                     while ($cat = mysqli_fetch_assoc($resultCategories)) {
                                         $selected = $row['category_id'] == $cat['id'] ? 'selected' : '';
                                         echo "<option value='{$cat['id']}' $selected>{$cat['name']}</option>";
                                     }
                                     ?>
                                 </select>
-                                <button type="submit" name="edit_image">Edit</button>
+                                <button type="submit" name="edit_image" onclick="return confirm('Are you sure?');">Edit</button>
                             </form>
                             <!-- Delete Form -->
                             <form method="POST" style="display: inline-block;">
                                 <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
-                                <button type="submit" name="delete_image" onclick="return confirm('Are you sure?');">Delete</button>
+                                <button type="submit" name="delete_image" onclick="return confirm('Are you sure?');">Remove</button>
                             </form>
                         </td>
                     </tr>

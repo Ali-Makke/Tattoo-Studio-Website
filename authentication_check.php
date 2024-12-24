@@ -28,7 +28,6 @@ function require_admin_access() {
     }
 }
 
-// Check if the current page requires user access
 function require_artist_access() {
     authenticate_user();
     if (!is_artist() && !is_admin()) {

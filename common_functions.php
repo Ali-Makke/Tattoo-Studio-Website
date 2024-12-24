@@ -89,3 +89,8 @@ function uploadImage($fileKey)
         return "Sorry, there was an error uploading your file.";
     }
 }
+
+// i am using this id to make user ids
+function generateUuid(): string {
+    return bin2hex(random_bytes(16));
+}

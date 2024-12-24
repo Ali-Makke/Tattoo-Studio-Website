@@ -6,12 +6,11 @@ body {
 }
 
 .container {
-    width: 80%;
-    margin: 20px auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-color);
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+    box-shadow: inset 0px 25px 7px -20px rgba(0, 0, 0, 0.44);
 }
 
 header {
@@ -64,7 +63,7 @@ header {
 
 .table th,
 .table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--primary-color);
     padding: 8px;
 }
 

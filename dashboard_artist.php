@@ -47,14 +47,6 @@ $resultEarnings = mysqli_query($conn, $sqlEarnings);
 $rowEarnings = mysqli_fetch_assoc($resultEarnings);
 $totalEarnings = $rowEarnings['total_earnings'] ?? 0;
 
-// Fetch all approved bookings
-$sqlAssignedBookings = "SELECT bookings.*, users.fname AS customer_fname, users.email AS customer_email 
-                        FROM bookings
-                        JOIN customers ON bookings.customer_id = customers.id
-                        JOIN users ON customers.user_id = users.id
-                        WHERE bookings.artist_id = $artistId AND bookings.status = 'approved'";
-$resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
-
 // Fetch finished tattoos
 $sqlFinishedTattoos = "SELECT * FROM tattoos WHERE artist_id = '$artistId'";
 $resultFinishedTattoos = mysqli_query($conn, $sqlFinishedTattoos);
@@ -77,7 +69,7 @@ if (isset($_POST['mark_as_done'])) {
             header("Location: " . $_SERVER['PHP_SELF']);
             exit;
         }
-        
+
         $newSchedule = "INSERT INTO artist_schedules (`date`,`time`,`session_status`,`artist_id`,`booking_id`) 
                                 VALUES ('$newDate', '$newTime', 'scheduled', '$artistId', '$bookingId')";
         mysqli_query($conn, $newSchedule);
@@ -85,9 +77,6 @@ if (isset($_POST['mark_as_done'])) {
     $sqlReassignArtist = "UPDATE bookings SET artist_id = '$artistId', status = 'approved' WHERE id = '$bookingId'";
     mysqli_query($conn, $sqlReassignArtist);
 }
-
-echo "fix status to schedule status, not booking status";
-echo "fix so that i get schedule things not booking things so that i can match booking id";
 ?>
 
 <!DOCTYPE html>
@@ -97,8 +86,8 @@ echo "fix so that i get schedule things not booking things so that i can match b
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InkVibe | Artist Dashboard</title>
-    <link rel="stylesheet" href="styles/included.css">
     <link rel="stylesheet" href="styles/admin.css">
+    <link rel="stylesheet" href="styles/included.css">
     <script defer src="scripts/included.js"></script>
 </head>
 
@@ -106,9 +95,9 @@ echo "fix so that i get schedule things not booking things so that i can match b
     <div class="container">
         <header>
             <?php include 'navbar.php'; ?>
-            <h2 class="heading">Artist Dashboard</h2>
         </header>
 
+        <h2 class="heading">Artist Dashboard</h2>
         <p>Welcome, <?php echo ucfirst(htmlspecialchars($_SESSION['fname'])); ?>. You are logged in as an artist.</p>
 
         <!-- Profile Information -->
@@ -131,56 +120,15 @@ echo "fix so that i get schedule things not booking things so that i can match b
             <?php } ?>
         </ul>
 
-        <!-- Controls: Assigned Bookings -->
-        <h3>Assigned Bookings</h3>
-        <?php if ($canUpdateBookingStatus) { ?>
-            <?php if (mysqli_num_rows($resultAssignedBookings) > 0) { ?>
-                <div class="table-responsive">
-                    <table class="table">
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>Idea</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                        <?php while ($row = mysqli_fetch_assoc($resultAssignedBookings)) { ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($row['id']); ?></td>
-                                <td><?php echo htmlspecialchars($row['customer_fname']); ?></td>
-                                <td><?php echo htmlspecialchars($row['customer_email']); ?></td>
-                                <td><?php echo htmlspecialchars($row['idea']); ?></td>
-                                <td><?php echo htmlspecialchars(ucfirst($row['status'])); ?></td>
-                                <td>
-                                    <form method="post">
-                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                        <label>Mark As Done?</label>
-                                        <button type="submit" name="mark_as_done" onclick="return confirm('Are you sure?');">Done</button>
-                                        <br><br>
-                                        <label>Mark As Canceled?</label>
-                                        <button type="submit" name="mark_as_canceled" onclick="return confirm('Are you sure?');">Canceled</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </table>
-                </div>
-            <?php } else { ?>
-                <p>No bookings assigned yet.</p>
-            <?php } ?>
-        <?php } else { ?>
-            <p>You do not have permission to manage bookings.</p>
-        <?php } ?>
 
-        <!-- Schedule Management -->
-        <h3>Manage Schedules</h3>
-        <a href="view_schedule.php">View Schedules</a>
-        <?php if ($canManageSchedules) { ?>
-            <a href="edit_schedule.php">Edit Schedules</a>
-        <?php } else { ?>
-            <p>You do not have permission to manage schedules.</p>
-        <?php } ?>
+        <!-- Controls Section -->
+        <div class="controls">
+            <h3>Controls</h3>
+            <ul>
+                <li><a href="manage_bookings.php">View Assigned Bookings</a></li>
+                <li><a href="manage_artist_schedules.php">Manage Schedules</a></li>
+            </ul>
+        </div>
 
         <!-- Finished Tattoos -->
         <h3>Finished Tattoos</h3>
@@ -196,7 +144,7 @@ echo "fix so that i get schedule things not booking things so that i can match b
                     <?php while ($row = mysqli_fetch_assoc($resultFinishedTattoos)) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($row['id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['description']); ?></td>
+                            <td><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
                             <td><?php echo htmlspecialchars($row['date_finished']); ?></td>
                             <td>
                                 <img src="<?php echo htmlspecialchars($row['finished_tattoo_url']); ?>" alt="Tattoo Image" width="100">

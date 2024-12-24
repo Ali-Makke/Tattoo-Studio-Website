@@ -17,8 +17,7 @@ while ($row = mysqli_fetch_assoc($resultArtists)) {
 // fetch all schedules for an artist
 if (isset($_GET['artist_id'])) {
     $artistId = $_GET['artist_id'];
-    $sqlSchedules = "SELECT artist_schedules.*,
-        bookings.status AS booking_status,
+    $sqlSchedules = "SELECT artist_schedules.*, artist_schedules.id AS session_id, DATE_FORMAT(artist_schedules.time, '%h:%i %p') AS time,
         users.fname AS customer_fname, 
         users.lname AS customer_lname
         FROM artist_schedules
@@ -31,6 +30,7 @@ if (isset($_GET['artist_id'])) {
 
 // Reschedule Booking
 if (isset($_POST['reschedule_booking'])) {
+    $sessionId = $_POST['session_id'];
     $newDate = $_POST['reschedule_date'];
     $newTime = $_POST['reschedule_time'];
     $newDateTime = $newDate . ' ' . $newTime;
@@ -44,9 +44,19 @@ if (isset($_POST['reschedule_booking'])) {
         exit;
     }
 
-    $updateSchedule = "UPDATE artist_schedules SET `date` = '$newDate', `time` = '$newTime'";
+    $updateSchedule = "UPDATE artist_schedules SET `date` = '$newDate', `time` = '$newTime' WHERE artist_schedules.id = '$sessionId'";
     mysqli_query($conn, $updateSchedule);
 }
+
+// reassign session to another artist
+if (isset($_POST['reassign_session'])) {
+    $sessionId = $_POST['session_id'];
+    $artistId = $_POST['artistid'];
+
+    $sqlReassignArtist = "UPDATE artist_schedules SET artist_id = '$artistId' WHERE id = '$sessionId'";
+    mysqli_query($conn, $sqlReassignArtist);
+}
+
 
 // show message
 if (isset($_SESSION['message'])) {
@@ -77,7 +87,7 @@ if (isset($_SESSION['message'])) {
 
         <!-- Artist Selection -->
         <form method="GET" action="">
-            <label for="artist_id">Select Artist:</label>
+            <label for="artist_id" style="font-size: larger; font-weight: bolder;">All Schedules For:</label>
             <select name="artist_id" id="artist_id" onchange="if(value != '') {this.form.submit()}" required>
                 <option value="">--Select Artist--</option>
                 <?php foreach ($artists as $artist) { ?>
@@ -91,27 +101,44 @@ if (isset($_SESSION['message'])) {
 
         <?php if (isset($_GET['artist_id'])) { ?>
             <section>
-                <h3>Schedules</h3>
                 <?php if (mysqli_num_rows($resultSchedules) > 0) { ?>
                     <table border="1" class="table">
                         <tr>
-                            <th>Schedule Number</th>
-                            <th>Booking Number</th>
-                            <th>Customer Name</th>
+                            <th>Session Id</th>
+                            <th>Booking Id</th>
+                            <th>Customer</th>
                             <th>Status</th>
+                            <th>Date</th>
                             <th>Actions</th>
                         </tr>
                         <?php while ($schedule = mysqli_fetch_assoc($resultSchedules)) { ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($schedule['id']); ?></td>
+                                <td><?php echo htmlspecialchars($schedule['session_id']); ?></td>
                                 <td><?php echo htmlspecialchars($schedule['booking_id']); ?></td>
                                 <td><?php echo htmlspecialchars($schedule['customer_fname'] . ' ' . $schedule['customer_lname']); ?></td>
                                 <td><?php echo htmlspecialchars($schedule['session_status']); ?></td>
+                                <td><?php echo htmlspecialchars($schedule['date']) . '<br>' . htmlspecialchars($schedule['time']); ?></td>
                                 <td>
-                                    <?php if ($schedule['booking_status'] == 'approved') { ?>
+                                    <?php if ($schedule['session_status'] == 'scheduled') { ?>
+                                        <!-- Assign schedule to artist -->
+                                        <form method="post">
+                                            <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
+                                            <select name="artistid" required>
+                                                <option value="">-- Reassign Session --</option>
+                                                <?php
+                                                mysqli_data_seek($resultArtists, 0);
+                                                while ($artist = mysqli_fetch_assoc($resultArtists)) {
+                                                    echo "<option value='{$artist['artist_id']}'>{$artist['fname']} {$artist['lname']}</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <button type="submit" name="reassign_session">Reassign</button>
+                                        </form>
+                                        <br>
                                         <!-- Reschedule Booking -->
                                         <form method="POST" style="display: inline-block;">
-                                            <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                            <input type="hidden" name="booking_id" value="<?php echo $schedule['booking_id']; ?>">
+                                            <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
                                             <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
                                             <input type="time" name="reschedule_time" required>
                                             <br>
