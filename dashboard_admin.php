@@ -100,7 +100,7 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
                     <th>Style</th>
                     <th>Placement</th>
                     <th>Artist</th>
-                    <th>Created At</th>
+                    <th>Booked At</th>
                 </tr>
                 <?php while ($row = mysqli_fetch_assoc($resultRecentBookings)) : ?>
                     <tr>

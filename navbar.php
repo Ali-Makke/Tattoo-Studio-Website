@@ -14,10 +14,10 @@
         <?php
         if (isset($_SESSION['email'])) {
             if (is_admin()) {
-                echo '<li><a href="dashboard_admin.php">Admin</a></li>';
-            } else if(is_artist()){
-                echo '<li><a href="dashboard_artist.php">Profile</a></li>';
-            }else{
+                echo '<li><a href="dashboard_admin.php">Admin</a> | <a href="dashboard_artist.php">Dashboard</a></li>';
+            } else if (is_artist()) {
+                echo '<li><a href="dashboard_artist.php">Dashboard</a></li>';
+            } else {
                 echo '<li><a href="dashboard_customer.php">Profile</a></li>';
             }
         } else {
