@@ -135,6 +135,7 @@ mysqli_close($conn);
         <br>
         <a href="dashboard_admin.php">Back to Admin Dashboard</a>
     </div>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>

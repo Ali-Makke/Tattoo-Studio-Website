@@ -147,6 +147,7 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
 
         <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>
     </div>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>
