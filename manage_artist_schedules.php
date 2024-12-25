@@ -7,7 +7,7 @@ require 'common_functions.php';
 $canEdit = false;
 if (isset($_POST['edit'])) {
     $canEdit = true;
-}else if (isset($_POST['cancel_edit'])) {
+} else if (isset($_POST['cancel_edit'])) {
     $canEdit = false;
 }
 
@@ -88,6 +88,21 @@ if (isset($_POST['reassign_session'])) {
     mysqli_query($conn, $sqlReassignArtist);
 }
 
+// mark schedule as complete
+if (isset($_POST['mark_as_complete'])) {
+    $sessionId = $_POST['session_id'];
+
+    $sqlReassignArtist = "UPDATE artist_schedules SET session_status = 'done' WHERE id = '$sessionId'";
+    mysqli_query($conn, $sqlReassignArtist);
+}
+
+if (isset($_POST['mark_as_canceled'])) {
+    $sessionId = $_POST['session_id'];
+
+    $sqlReassignArtist = "UPDATE artist_schedules SET session_status = 'canceled' WHERE id = '$sessionId'";
+    mysqli_query($conn, $sqlReassignArtist);
+}
+
 
 // show message
 if (isset($_SESSION['message'])) {
@@ -117,7 +132,7 @@ if (isset($_SESSION['message'])) {
         <?php if (is_artist()) { ?>
             <!-- Enable Edit Sessions -->
             <form method="POST" action="">
-                <label for="artist_id" style="font-size: large;">Mark session as done or complete: </label>
+                <label for="artist_id" style="font-size: large;">Mark session as complete or canceled: </label>
                 <button type="submit" name="edit">Edit</button>
                 <button type="submit" name="cancel_edit">Cancel Edit</button>
             </form>
@@ -160,7 +175,7 @@ if (isset($_SESSION['message'])) {
                                 <td><?php echo htmlspecialchars($schedule['date']) . '<br>' . htmlspecialchars($schedule['time']); ?></td>
                                 <!-- actions -->
                                 <td>
-                                    <?php if ($schedule['session_status'] != 'canceled' && ($schedule['session_status'] == 'scheduled' || $schedule['session_status'] == 'pending_approval')) { ?>
+                                    <?php if ($schedule['session_status'] !== 'canceled' && ($schedule['session_status'] === 'scheduled' || $schedule['session_status'] === 'pending_approval')) { ?>
                                         <?php if (is_admin()) { ?>
                                             <!-- Assign schedule to artist -->
                                             <form method="post">
@@ -194,13 +209,14 @@ if (isset($_SESSION['message'])) {
                                         <?php } else if (is_artist() && $canEdit) { ?>
                                             <form method="post">
                                                 <br>
+                                                <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
                                                 <button type="submit" name="mark_as_complete" onclick="return confirm('Are you sure this session is completed?');">Mark As Complete</button>
-                                                <button type="submit" name="mark_as_complete" onclick="return confirm('Are you sure you want to cancel this session?');">Mark As Canceled</button>
+                                                <button type="submit" name="mark_as_canceled" onclick="return confirm('Are you sure you want to cancel this session?');">Mark As Canceled</button>
                                                 <br><br>
                                             </form>
                                         <?php } ?>
-                                    <?php } else {
-                                        echo 'Booking not scheduled yet';
+                                    <?php } else { //means statue = done
+                                        echo "Session " . $schedule['session_status'];
                                     } ?>
                                 </td>
                             </tr>

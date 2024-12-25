@@ -2,8 +2,13 @@
 require 'authentication_check.php';
 require_artist_access();
 require 'db_connect.php';
-include 'scroll_to_top.php';
 
+$canEdit = false;
+if (isset($_POST['edit'])) {
+    $canEdit = true;
+} else if (isset($_POST['cancel_edit'])) {
+    $canEdit = false;
+}
 // Update Booking Status
 // if (isset($_POST['update_status'])) {
 //     $bookingId = $_POST['booking_id'];
@@ -12,7 +17,7 @@ include 'scroll_to_top.php';
 //     mysqli_query($conn, $sqlUpdateStatus);
 // }
 // Assign Artist with schedule
-if (isset($_POST['assign_artist'])) {
+if (isset($_POST['assign_artist']) || isset($_POST['create_session'])) {
     $bookingId = $_POST['booking_id'];
     $artistId = $_POST['artist_id'];
     $newDate = $_POST['reschedule_date'];
@@ -115,6 +120,41 @@ if (is_artist()) {
 
 $resultCustomers = mysqli_query($conn, $sqlCustomers);
 
+// check if booking is complete an update it's status
+// $sqlCompleteBooking = "UPDATE bookings b
+// SET b.status = 'approved'
+// WHERE b.id IN (
+//     SELECT booking_id
+//     FROM artist_schedules
+//     GROUP BY booking_id
+//     HAVING SUM(CASE WHEN session_status IN ('done', 'canceled') THEN 1 ELSE 0 END) = COUNT(*));";
+// if (!mysqli_query($conn, $sqlCompleteBooking)) {
+//     echo "error";
+// }
+
+// fetch bookings when all their sessions done or canceled
+$sqlCompleteBooking = "SELECT b.id
+FROM bookings b
+WHERE b.id IN (
+    SELECT booking_id
+    FROM artist_schedules
+    GROUP BY booking_id
+    HAVING SUM(CASE WHEN session_status IN ('done', 'canceled') THEN 1 ELSE 0 END) = COUNT(*));";
+$resultCompleteBooking = mysqli_query($conn, $sqlCompleteBooking);
+
+$completedBookings = [];
+while ($row = mysqli_fetch_assoc($resultCompleteBooking)) {
+    $completedBookings[] = $row['id'];
+}
+
+// can mark booking as complete only if all sessions are done and/or canceled
+if (isset($_POST['mark_as_complete'])) {
+    $bookingId = $_POST['booking_id'];
+
+    $sqlReassignArtist = "UPDATE booking SET status = 'done' WHERE id = '$bookingId'";
+    mysqli_query($conn, $sqlReassignArtist);
+}
+
 if (isset($_SESSION['message'])) {
     $escapedMessage = htmlspecialchars($_SESSION['message'], ENT_QUOTES, 'UTF-8');
     echo '<script>alert("' . $escapedMessage . '");</script>';
@@ -181,6 +221,14 @@ if (isset($_SESSION['message'])) {
         <div class="form-section">
             <?php if (mysqli_num_rows($resultBookings) > 0) { ?>
                 <h3>Booking Details</h3>
+                <?php if (is_artist()) { ?>
+                    <!-- Enable Edit Sessions -->
+                    <form method="POST" action="">
+                        <label for="artist_id" style="font-size: large;">Mark Booking as complete: </label>
+                        <button type="submit" name="edit">Edit</button>
+                        <button type="submit" name="cancel_edit">Cancel Edit</button>
+                    </form>
+                <?php } ?>
                 <table border="1" class="table">
                     <tr>
                         <th>ID</th>
@@ -211,7 +259,7 @@ if (isset($_SESSION['message'])) {
                                 <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
                             </td>
                             <td><?php echo ucfirst($row['booking_status']); ?></td>
-                            <?php if ($row['booking_status'] == 'pending' && is_admin()) { ?>
+                            <?php if ($row['booking_status'] === 'pending' && is_admin()) { ?>
                                 <td>
                                     <!-- Assign Booking To Artist -->
                                     <form method="POST" style="display: inline-block;">
@@ -239,11 +287,28 @@ if (isset($_SESSION['message'])) {
                                         <button type="submit" name="cancel_booking" onclick="return confirm('Are you sure?');">Cancel Booking</button>
                                     </form>
                                 </td>
-                            <?php } else if ($row['booking_status'] == 'approved' && is_artist()) { ?>
+                            <?php } else if ($row['booking_status'] === 'approved' && is_artist()) { ?>
                                 <td>
-                                    <form method="post">
-                                        <button type="submit" name="create_session">Add Session</button>
-                                    </form>
+                                    <?php if (!$canEdit) { ?>
+                                        <form method="post">
+                                            <!-- Artist Schedule Booking -->
+                                            <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                            <input type="hidden" name="booking_id" value="<?php echo $_SESSION['artist_id']; ?>">
+                                            <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
+                                            <input type="time" name="reschedule_time" required>
+                                            <br>
+                                            <button type="submit" name="create_session">Add Session</button>
+                                        </form>
+                                    <?php } ?>
+                                    <!-- Add the button for bookings where all sessions are 'done' or 'canceled' -->
+                                    <?php if (in_array($row['id'], $completedBookings) && $canEdit) { ?>
+                                        <form method="post">
+                                            <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                            <button type="button" name="mark_as_complete">Set as complete</button>
+                                        </form>
+                                    <?php } else if ($canEdit) {
+                                        echo "<p>Some sessions are not complete</p>";
+                                    } ?>
                                 </td>
                             <?php } else {
                                 echo "<td>This booking is" . '<br>' . $row['booking_status'] . '</td>';

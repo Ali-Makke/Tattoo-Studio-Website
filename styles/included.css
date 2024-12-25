@@ -5,7 +5,7 @@
     --text-color: #f3f3f3; */
 }
 
-.mid-theme{
+.mid-theme {
     --primary-color: #363636;
     --secondary-color: #e0e0e0;
     /* --text-color: #333333; */
@@ -411,3 +411,24 @@ nav ul li a:focus-within {
 }
 
 /* end of footer */
+
+/* scroll to top button */
+#return-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    width: 50px;
+    height: 50px;
+    display: block;
+    text-decoration: none;
+    border-radius: 35px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.9s ease-out;
+}
+
+#return-to-top:hover {
+    background: rgba(0, 0, 0, 1);
+    opacity: 1;    
+}

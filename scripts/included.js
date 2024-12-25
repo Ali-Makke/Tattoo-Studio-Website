@@ -1,3 +1,23 @@
+// for scroll to top button
+window.onscroll = function() {
+    const scrollToTopBtn = document.getElementById('return-to-top');
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+      scrollToTopBtn.style.opacity = '1';
+      scrollToTopBtn.style.transform = 'translateY(0)';
+    } else {
+      scrollToTopBtn.style.opacity = '0';
+      scrollToTopBtn.style.transform = 'translateY(70px)';
+    }
+  };
+
+  document.getElementById('return-to-top').addEventListener('click', function(event) {
+    event.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+});
+
 document.getElementById('hamburger').addEventListener('click', function() {
     var navLinks = document.getElementById('nav-links');
     var hamburger = document.getElementById('hamburger');

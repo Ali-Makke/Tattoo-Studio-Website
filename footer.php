@@ -56,4 +56,5 @@
             <p>Artist Charles T. Chaikofsky</p>
         </div>
     </div>
+    <a href="backtotop:" id="return-to-top"><i></i></a>
 </footer>
