@@ -59,7 +59,8 @@ $statusFilter = isset($_GET['status']) ? $_GET['status'] : '';
 $customerFilter = isset($_GET['customer']) ? $_GET['customer'] : '';
 
 $sqlFetchBookings = "SELECT
-    bookings.*,
+    bookings.*, 
+    bookings.status AS booking_status,
     customers.id AS customer_id,
     users.fname AS customer_fname,
     users.lname AS customer_lname,
@@ -100,9 +101,18 @@ $sqlArtists = "SELECT artists.id, users.fname, users.lname
 $resultArtists = mysqli_query($conn, $sqlArtists);
 
 // Fetch Customers for Filters
-$sqlCustomers = "SELECT customers.id, users.fname, users.lname 
-                 FROM customers
-                 JOIN users ON customers.user_id = users.id";
+$sqlCustomers = "SELECT c.*, users.fname, users.lname
+FROM customers c
+JOIN bookings b ON c.id = b.customer_id
+JOIN users ON c.user_id = users.id
+JOIN artists a ON b.artist_id = a.id
+WHERE 1";
+
+if (is_artist()) {
+    $artistId = $_SESSION['artist_id'];
+    $sqlCustomers .= " AND a.id = '$artistId';";
+}
+
 $resultCustomers = mysqli_query($conn, $sqlCustomers);
 
 if (isset($_SESSION['message'])) {
@@ -178,9 +188,7 @@ if (isset($_SESSION['message'])) {
                         <th>Image</th>
                         <th>Details</th>
                         <th>Status</th>
-                        <?php if (is_admin()) {
-                            echo "<th> Actions </th>";
-                        } ?>
+                        <th> Actions </th>
                     </tr>
                     <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
                         <tr>
@@ -202,9 +210,9 @@ if (isset($_SESSION['message'])) {
                                 <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
                                 <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
                             </td>
-                            <td><?php echo ucfirst($row['status']); ?></td>
-                            <td>
-                                <?php if ($row['status'] == 'pending' && is_admin()) { ?>
+                            <td><?php echo ucfirst($row['booking_status']); ?></td>
+                            <?php if ($row['booking_status'] == 'pending' && is_admin()) { ?>
+                                <td>
                                     <!-- Assign Booking To Artist -->
                                     <form method="POST" style="display: inline-block;">
                                         <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
@@ -230,16 +238,22 @@ if (isset($_SESSION['message'])) {
                                         <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
                                         <button type="submit" name="cancel_booking" onclick="return confirm('Are you sure?');">Cancel Booking</button>
                                     </form>
-                                <?php } else if (is_admin()) {
-                                    echo "This booking is" . '<br>' . $row['status'];
-                                } else {} ?>
-                            </td>
+                                </td>
+                            <?php } else if ($row['booking_status'] == 'approved' && is_artist()) { ?>
+                                <td>
+                                    <form method="post">
+                                        <button type="submit" name="create_session">Add Session</button>
+                                    </form>
+                                </td>
+                            <?php } else {
+                                echo "<td>This booking is" . '<br>' . $row['booking_status'] . '</td>';
+                            } ?>
                         </tr>
                     <?php endwhile; ?>
                 </table>
-            <?php } else{ 
+            <?php } else {
                 echo '<br><h3>--- No Bookings<br><br></h3>';
-            }?>
+            } ?>
         </div>
 
         <?php if (is_admin()) {
@@ -248,6 +262,7 @@ if (isset($_SESSION['message'])) {
             echo "<a class='back-link' href='dashboard_artist.php'>Back to Dashboard</a>";
         } ?>
     </div>
+    <?php include 'footer.php' ?>
 </body>
 
 </html>

@@ -12,6 +12,7 @@ $sqlUser = "SELECT artists.id AS artist_id, artists.user_id, users.fname, users.
 $resultUser = mysqli_query($conn, $sqlUser);
 $user = mysqli_fetch_assoc($resultUser);
 $artistId = $user['artist_id'];
+$_SESSION['artist_id'] = $artistId; //this session is used in different pages
 
 // Fetch permissions for the artist
 $sqlPermissions = "SELECT * FROM artist_permissions WHERE artist_id = '$artistId'";

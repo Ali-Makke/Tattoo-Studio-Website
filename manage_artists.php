@@ -4,7 +4,6 @@ require_admin_access();
 require 'db_connect.php';
 require 'common_functions.php';
 
-$fname = $lname = $email = $password = "";
 $successMessage = $errorMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['artist_permissions'])) {
@@ -55,34 +54,31 @@ $sqlartist_reviews = "SELECT artist_reviews.*, customers.id AS customer_id, user
 $resultartist_reviews = mysqli_query($conn, $sqlartist_reviews);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userId = uniqid();
     if (isset($_POST['add_artist_account'])) {
-        if (empty(trim($_POST["fname"])) || empty(trim($_POST["lname"])) || empty(trim($_POST["email"])) || empty(trim($_POST["password"]))) {
+        $userId = uniqid();
+        // Collect and sanitize inputs
+        $fname = test_input($_POST["fname"] ?? "");
+        $lname = test_input($_POST["lname"] ?? "");
+        $email = test_input($_POST["email"] ?? "");
+        $password = test_input($_POST["password"] ?? "");
+
+        if (empty($fname) || empty($lname) || empty($email) || empty($password)) {
             $errorMessage = "All fields are required.";
+        } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $fname) || !preg_match("/^[a-zA-Z-' ]*$/", $lname)) {
+            $errorMessage = "Only letters and white space allowed in names.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errorMessage = "Invalid email format.";
+        } elseif ($passwordErr = isValidPassword($password)) {
+            $errorMessage = implode("<br>", $passwordErr);
         } else {
-            $fname = test_input($_POST["fname"]);
-            $lname = test_input($_POST["lname"]);
-            if (!preg_match("/^[a-zA-Z-' ]*$/", $fname) || !preg_match("/^[a-zA-Z-' ]*$/", $lname)) {
-                $errorMessage = "Only letters and white space allowed in names.";
-            }
-            $email = test_input($_POST["email"]);
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errorMessage = "Invalid email format.";
-            }
-            $password = test_input($_POST["password"]);
-            $passwordErrors = isValidPassword($password);
-            if (!empty($passwordErrors)) {
-                $errorMessage = implode(" ", $passwordErrors);
-            }
-            if (empty($errorMessage)) {
-                $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
-                $sqlAddUserArtist = "INSERT INTO users (id, fname, lname, email, password, role_id) VALUES ('$userId', '$fname', '$lname', '$email', '$passwordHashed', 3)";
-                $sqlAddArtist = "INSERT INTO artists (user_id) VALUES ('$userId')";
-                if (mysqli_query($conn, $sqlAddUserArtist) && mysqli_query($conn, $sqlAddArtist)) {
-                    $successMessage = "Artist account added successfully.";
-                } else {
-                    $errorMessage = "Database error: " . mysqli_error($conn);
-                }
+            // Hash the password
+            $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
+            $sqlAddUserArtist = "INSERT INTO users (id, fname, lname, email, password, role_id) VALUES ('$userId', '$fname', '$lname', '$email', '$passwordHashed', 3)";
+            $sqlAddUserArtist = "INSERT INTO artists (user_id) VALUES ('$userId')";
+            if (mysqli_query($conn, $sqlAddUserArtist) && mysqli_query($conn, $sqlAddArtist)) {
+                $successMessage = "Artist account added successfully.";
+            } else {
+                $errorMessage = "Error: " . mysqli_error($conn);
             }
         }
     } elseif (isset($_POST['edit_artist_bio'])) {
@@ -102,8 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errorMessage = "Database error: " . mysqli_error($conn);
         }
-    }else {}
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -243,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <br>
                 <label for="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required>
+                <input type="password" name="password" id="password" placeholder="Password" required>
                 <button type="submit" name="add_artist_account">Add Artist Account</button>
             </form>
         </section>
