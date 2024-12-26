@@ -20,7 +20,7 @@ $resultBookings = mysqli_query($conn, $sqlBookings);
 $rowBookings = mysqli_fetch_assoc($resultBookings);
 $totalBookings = $rowBookings['total_bookings'];
 
-// Total Payments
+// Total Payments (Revenue)
 $sqlPayments = "SELECT SUM(total_price) AS total_payments FROM payments WHERE status = 'paid'";
 $resultPayments = mysqli_query($conn, $sqlPayments);
 $rowPayments = mysqli_fetch_assoc($resultPayments);
@@ -72,7 +72,7 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
                 <li>Total Artists: <?php echo $totalArtists; ?></li>
                 <li>Total Customers: <?php echo $totalCustomers; ?></li>
                 <li>Total Bookings: <?php echo $totalBookings; ?></li>
-                <li>Total Payments: $<?php echo number_format($totalPayments, 2); ?></li>
+                <li>Total Revenue: $<?php echo number_format($totalPayments, 2); ?></li>
             </ul>
         </div>
 
@@ -83,9 +83,9 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
                 <li><a href="manage_artists.php">Manage Artists</a></li>
                 <li><a href="manage_customers.php">Manage Customers</a></li>
                 <li><a href="manage_bookings.php">Manage Bookings</a></li>
-                <li><a href="manage_artist_schedules.php">Manage Artist Schedules</a></li>
+                <li><a href="manage_artist_schedules.php">Manage Schedules</a></li>
                 <li><a href="manage_categories.php">Manage Categories</a></li>
-                <li><a href="manage_tattoos.php">Manage Completed Tattoos</a></li>
+                <li><a href="manage_tattoos.php">Manage Tattoos</a></li>
                 <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
                 <li><a href="manage_payments.php">Manage Payments</a></li>
             </ul>

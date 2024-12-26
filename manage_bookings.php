@@ -106,7 +106,7 @@ $sqlArtists = "SELECT artists.id, users.fname, users.lname
 $resultArtists = mysqli_query($conn, $sqlArtists);
 
 // Fetch Customers for Filters
-$sqlCustomers = "SELECT c.*, users.fname, users.lname
+$sqlCustomers = "SELECT DISTINCT c.*, users.fname, users.lname
 FROM customers c
 JOIN bookings b ON c.id = b.customer_id
 JOIN users ON c.user_id = users.id
@@ -117,10 +117,9 @@ if (is_artist()) {
     $artistId = $_SESSION['artist_id'];
     $sqlCustomers .= " AND a.id = '$artistId';";
 }
-
 $resultCustomers = mysqli_query($conn, $sqlCustomers);
 
-// check if booking is complete an update it's status
+// check if booking is complete and auto update it's status
 // $sqlCompleteBooking = "UPDATE bookings b
 // SET b.status = 'approved'
 // WHERE b.id IN (
@@ -236,7 +235,7 @@ if (isset($_SESSION['message'])) {
                         <th>Image</th>
                         <th>Details</th>
                         <th>Status</th>
-                        <th> Actions </th>
+                        <th>Actions</th>
                     </tr>
                     <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
                         <tr>

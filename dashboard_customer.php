@@ -3,17 +3,15 @@ require 'authentication_check.php';
 require_customer_access();
 require 'db_connect.php';
 
-$firstName = $_SESSION['fname'];
+$email = $_SESSION['email'];
 
-$sqlUser = "SELECT * FROM users WHERE fname = '$firstName'";
-$resultUser = mysqli_query($conn, $sqlUser);
-$user = mysqli_fetch_assoc($resultUser);
-$userId = $user['id'];
-
-$sqlAssignedBookings = "SELECT * 
+$sqlCustomerBookings = "SELECT bookings.*
                         FROM bookings
-                        WHERE bookings.artist_id = '$userId'";
-$resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
+                        JOIN customers ON customers.id = bookings.customer_id
+                        JOIN users ON users.id = customers.user_id
+                        WHERE users.email = '$email'
+                        ORDER BY bookings.created_at ASC;";
+$resultCustomerBookings = mysqli_query($conn, $sqlCustomerBookings);
 ?>
 
 <!DOCTYPE html>
@@ -34,44 +32,46 @@ $resultAssignedBookings = mysqli_query($conn, $sqlAssignedBookings);
         <header>
             <?php include 'navbar.php'; ?>
         </header>
-        
+
         <h2 class="heading">Customer Dashboard</h2>
-        <p>Welcome, <?php echo $_SESSION['fname']; ?>.</p>
 
         <h3>Profile Information</h3>
         <ul>
-            <li>Username: <?php echo $user['fname']; ?></li>
-            <li>Email: <?php echo $user['email']; ?></li>
+            <li>Username: <?php echo $_SESSION['fname'] . ' ' . $_SESSION['lname']; ?></li>
+            <li>Email: <?php echo $_SESSION['email']; ?></li>
         </ul>
-
 
         <h3>Your Bookings</h3>
 
         <div class="table-responsive">
             <table class="table">
                 <tr>
-                    <th>Email</th>
-                    <th>Style</th>
-                    <th>Placement</th>
-                    <th>Idea</th>
-                    <th>Color</th>
-                    <th>Size</th>
-                    <th>Budget</th>
+                    <th>Image</th>
+                    <th>Details</th>
                     <th>Dates</th>
                     <th>Times</th>
                     <th>Additional Info</th>
                 </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultAssignedBookings)) { ?>
+                <?php while ($row = mysqli_fetch_assoc($resultCustomerBookings)) { ?>
                     <tr>
-                        <td><?php echo $row['email']; ?></td>
-                        <td><?php echo $row['style']; ?></td>
-                        <td><?php echo $row['placement']; ?></td>
-                        <td><?php echo $row['idea']; ?></td>
-                        <td><?php echo $row['color']; ?></td>
-                        <td><?php echo $row['size']; ?></td>
-                        <td><?php echo $row['budget']; ?></td>
-                        <td><?php echo $row['dates']; ?></td>
-                        <td><?php echo $row['times']; ?></td>
+                        <td>
+                            <?php
+                            if ($row['image_url']) {
+                                echo '<img src="' . $row['image_url'] . '" alt="Artist Image" style="width:100px;height:auto;">';
+                            } else {
+                                echo "No Image";
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <strong>Idea:</strong> <?php echo $row['idea']; ?><br>
+                            <strong>Size:</strong> <?php echo $row['size']; ?><br>
+                            <strong>Color:</strong> <?php echo ucfirst($row['color']); ?><br>
+                            <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
+                            <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
+                        </td>
+                        <td><?php echo $row['preferred_dates']; ?></td>
+                        <td><?php echo $row['preferred_times']; ?></td>
                         <td><?php echo $row['additional_info']; ?></td>
                     </tr>
                 <?php } ?>

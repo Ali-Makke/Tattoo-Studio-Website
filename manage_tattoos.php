@@ -4,6 +4,30 @@ require_admin_access();
 require 'common_functions.php';
 require 'db_connect.php';
 
+
+// Fetch bookings with filters
+$artistFilter = htmlspecialchars(isset($_GET['artist_id']) ? $_GET['artist_id'] : '');
+
+$sqlBookings = "SELECT bookings.id AS booking_id,
+    users.fname AS customer_fname,
+    users.lname AS customer_lname,
+    artists.id AS artist_id,
+    users2.fname AS artist_fname,
+    users2.lname AS artist_lname
+FROM bookings
+LEFT JOIN customers ON bookings.customer_id = customers.id
+LEFT JOIN users AS users ON customers.user_id = users.id
+LEFT JOIN artists ON bookings.artist_id = artists.id
+LEFT JOIN users AS users2 ON artists.user_id = users2.id
+WHERE bookings.status = 'done'";
+
+if ($artistFilter) {
+    $sqlBookings .= " AND bookings.artist_id = $artistFilter";
+}
+
+$resultBookings = mysqli_query($conn, $sqlBookings);
+
+// Fetch all artists for filter
 $artists = [];
 $sqlArtists = "SELECT artists.id AS artist_id, users.fname, users.lname 
                FROM artists 
@@ -12,21 +36,6 @@ $resultArtists = mysqli_query($conn, $sqlArtists);
 while ($row = mysqli_fetch_assoc($resultArtists)) {
     $artists[] = $row;
 }
-
-$completeBookings = [];
-if (isset($_GET['artist_id'])) {
-    $artistId = $_GET['artist_id'];
-    $sqlCompleteBookings = "SELECT bookings.id AS booking_id, users.fname AS customer_fname, users.lname AS customer_lname
-                           FROM bookings
-                           JOIN customers ON bookings.customer_id = customers.id
-                           JOIN users ON customers.user_id = users.id
-                           WHERE bookings.artist_id = $artistId AND bookings.status = 'done'";
-    $resultCompleteBookings = mysqli_query($conn, $sqlCompleteBookings);
-    while ($row = mysqli_fetch_assoc($resultCompleteBookings)) {
-        $completeBookings[] = $row;
-    }
-}
-
 $sqlCategories = "SELECT id, name FROM categories";
 $resultCategories = mysqli_query($conn, $sqlCategories);
 $message = '';
@@ -36,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $artist_id = test_input($_POST['artist_id']);
         $description = test_input($_POST['description']);
         $categoryId = test_input($_POST['category_id']);
-        $image_url = uploadImage(fileKey: 'image');
+        $image_url = uploadImage(fileKey: 'image', target_dir: 'images/tattoo_uploads/');
 
         if (str_contains($image_url, 'images/tattoo_uploads/')) {
             $message = "Image uploaded successfully: " . $image_url;
@@ -57,11 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['message'] = $message;
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
-}
-if (isset($_SESSION['message'])) {
-    $escapedMessage = htmlspecialchars($_SESSION['message'], ENT_QUOTES, 'UTF-8');
-    echo '<script>alert("' . $escapedMessage . '");</script>';
-    unset($_SESSION['message']);
 }
 
 mysqli_close($conn);
@@ -86,54 +90,74 @@ mysqli_close($conn);
             <h1 class="heading">Add New Tattoo</h1>
         </header>
 
+        <!-- Filters Section -->
         <form method="GET" action="">
-            <label for="artist_id">Select Artist:</label>
-            <select name="artist_id" id="artist_id" onchange="if(value != '') {this.form.submit()}" required>
-                <option value="">--Select Artist--</option>
-                <?php foreach ($artists as $artist) { ?>
-                    <option value="<?php echo $artist['artist_id']; ?>"
-                        <?php echo (isset($_GET['artist_id']) && $_GET['artist_id'] == $artist['artist_id']) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($artist['fname'] . ' ' . $artist['lname']); ?>
-                    </option>
-                <?php } ?>
-            </select>
-            <br><br>
-        </form>
-
-        <?php if (isset($_GET['artist_id'])) { ?>
-            <form method="POST" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-                <input type="hidden" name="artist_id" value="<?php echo $_GET['artist_id']; ?>">
-                <label for="booking_id">Select Booking:</label>
-                <select name="booking_id" id="booking_id" required>
-                    <option value="">--Select Booking--</option>
-                    <?php foreach ($completeBookings as $booking) { ?>
-                        <option value="<?php echo $booking['booking_id']; ?>">
-                            <?php echo htmlspecialchars($booking['booking_id'] . ' - ' . $booking['customer_fname'] . ' ' . $booking['customer_lname']); ?>
+            <div>
+                <label for="artist_id">Filter by Artist:</label>
+                <select name="artist_id" id="artist_id">
+                    <option value="">--Select Artists--</option>
+                    <?php foreach ($artists as $artist) { ?>
+                        <option value="<?php echo $artist['artist_id']; ?>"
+                            <?php echo (isset($_GET['artist_id']) && $_GET['artist_id'] == $artist['artist_id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($artist['fname'] . ' ' . $artist['lname']); ?>
                         </option>
                     <?php } ?>
                 </select>
-                <br> <br>
-                <label for="image">Upload Image:</label>
-                <input type="file" id="image" name="image" required>
-                <br> <br>
-                <label for="category_id">Category:</label>
-                <select id="category_id" name="category_id" required>
-                    <option value="">--Select Category--</option>
-                    <?php
-                    while ($row = mysqli_fetch_assoc($resultCategories)) {
-                        echo "<option value=\"" . $row['id'] . "\">" . $row['name'] . "</option>";
-                    }
-                    ?>
-                </select>
-                <br> <br>
-                <label for="description">Description(optional):</label>
-                <textarea id="description" name="description"> </textarea>
-                <br> <br>
-                <button type="submit">Add Tattoo</button>
-            </form>
-        <?php } ?>
+                <button type="submit">Filter</button>
+            </div>
+        </form>
+
+        <!-- Display Bookings Table -->
+        <?php if (mysqli_num_rows($resultBookings) > 0) { ?>
+        <h2>Bookings</h2>
+        <table border="1" class="table">
+            <tr>
+                <th>Booking ID</th>
+                <th>Customer</th>
+                <th>Artist</th>
+                <th>Actions</th>
+            </tr>
+
+            <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
+                <tr>
+                    <td><?php echo $row['booking_id']; ?></td>
+                    <td><?php echo htmlspecialchars($row['customer_fname']) . ' ' . htmlspecialchars($row['customer_lname']); ?></td>
+                    <td><?php echo htmlspecialchars($row['artist_fname']) . ' ' . htmlspecialchars($row['artist_lname']); ?></td>
+                    <td>
+                        <!-- Add Tattoo Form for this Booking -->
+                        <form method="POST" enctype="multipart/form-data" action="">
+                            <input type="hidden" name="booking_id" value="<?php echo $row['booking_id']; ?>">
+                            <input type="hidden" name="artist_id" value="<?php echo $row['artist_id']; ?>">
+
+                            <label for="image">Image:</label>
+                            <input type="file" id="image" name="image" required>
+                            <br>
+                            <label for="category_id">Category:</label>
+                            <select name="category_id" required>
+                                <option value="">--Select Category--</option>
+                                <?php
+                                mysqli_data_seek($resultCategories, 0);
+                                while ($cat = mysqli_fetch_assoc($resultCategories)) {
+                                    echo "<option value=\"" . $cat['id'] . "\">" . $cat['name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            <br>
+                            <label for="description">Description (optional):</label>
+                            <textarea id="description" name="description"></textarea>
+                            <br>
+                            <button type="submit">Add Tattoo</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </table>
+        <?php }else {
+            echo "<br>No bookings have been completed for selected artist<br>";
+        } ?>
+
         <br>
-        <a href="dashboard_admin.php">Back to Admin Dashboard</a>
+        <a class="back-link" href="dashboard_admin.php">Back to Admin Dashboard</a>
     </div>
     <?php include 'footer.php'; ?>
 </body>

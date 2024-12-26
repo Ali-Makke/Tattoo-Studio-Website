@@ -39,17 +39,20 @@ $sqlUpcomingBookings = "SELECT COUNT(*) AS upcoming_bookings
 $resultUpcomingBookings = mysqli_query($conn, $sqlUpcomingBookings);
 $rowUpcomingBookings = mysqli_fetch_assoc($resultUpcomingBookings);
 $numUpcomingBookings = $rowUpcomingBookings['upcoming_bookings'];
-$sqlEarnings = "SELECT payments.*, SUM(sub_payments.amount) AS total_earnings, tattoos.id, tattoos.artist_id, artists.id
+$sqlEarnings = "SELECT payments.*, SUM(sub_payments.amount) AS total_earnings, bookings.id, bookings.artist_id, artists.id
                 FROM payments
                 JOIN sub_payments ON payments.id = sub_payments.payment_id
-                JOIN tattoos ON payments.tattoos_id = tattoos.id
-                JOIN artists ON tattoos.artist_id = artists.id";
+                JOIN bookings ON payments.booking_id = bookings.id
+                JOIN artists ON bookings.artist_id = artists.id";
 $resultEarnings = mysqli_query($conn, $sqlEarnings);
 $rowEarnings = mysqli_fetch_assoc($resultEarnings);
 $totalEarnings = $rowEarnings['total_earnings'] ?? 0;
 
 // Fetch finished tattoos
-$sqlFinishedTattoos = "SELECT * FROM tattoos WHERE artist_id = '$artistId'";
+$sqlFinishedTattoos = "SELECT * FROM tattoos
+WHERE artist_id = '$artistId'
+ORDER BY finished_tattoo_url DESC
+LIMIT 5";
 $resultFinishedTattoos = mysqli_query($conn, $sqlFinishedTattoos);
 
 // Mark schedule as done:

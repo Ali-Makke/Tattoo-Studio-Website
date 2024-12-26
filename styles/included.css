@@ -432,3 +432,20 @@ nav ul li a:focus-within {
     background: rgba(0, 0, 0, 1);
     opacity: 1;    
 }
+/* end of scroll to top button */
+/* back link in admin/artist pages */
+.back-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 3px;
+    z-index: 999;
+}
+
+.back-link:hover {
+    background-color: #0056b3;
+}
