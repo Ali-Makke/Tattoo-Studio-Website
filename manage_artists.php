@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <th>Artist</th>
                     <th>Customer</th>
-                    <th>Content</th>
+                    <th>Comment</th>
                     <th>Rating</th>
                     <th>Actions</th>
                 </tr>
@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <tr>
                         <td><?php echo htmlspecialchars($row['artist_fname']); ?></td>
                         <td><?php echo htmlspecialchars($row['customer_fname']); ?></td>
-                        <td><?php echo htmlspecialchars($row['content']); ?></td>
+                        <td><?php echo $row['comment']; ?></td>
                         <td><?php echo number_format($row['rating'], 1); ?></td>
                         <td>
                             <form method="POST" class="inline-form">

@@ -37,19 +37,16 @@ function isValidPassword($password)
 }
 
 // this is for the image uploads
-function uploadImage($fileKey)
-{
-    // Set the target directory to 'images/tattoo_uploads/'
-    $target_dir = "images/tattoo_uploads/";
-
-    // Create the directory if it doesn't exist
-    if (!is_dir($target_dir)) {
-        mkdir($target_dir, 0755, true);
-    }
-
+function uploadImage($fileKey, $target_dir)
+{   
     // Ensure the file exists and there's no error
     if (!isset($_FILES[$fileKey]) || $_FILES[$fileKey]['error'] !== UPLOAD_ERR_OK) {
         return "No file uploaded or an error occurred!";
+    }
+    
+    // Create the directory if it doesn't exist
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0755, true);
     }
 
     // Retrieve file details

@@ -6,7 +6,7 @@ require 'common_functions.php';
 
 $successMessage = $errorMessage = "";
 
-// Fetch customers
+// Fetch customers and their associated data
 $sqlCustomers = "SELECT customers.id, users.fname AS customer_fname, users.lname AS customer_lname 
                  FROM customers 
                  JOIN users ON customers.user_id = users.id";

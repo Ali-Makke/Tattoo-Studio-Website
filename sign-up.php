@@ -76,20 +76,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $user = mysqli_fetch_assoc($result);
 
             if ($user && password_verify($lpassword, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['fname'] = $user['fname'];
-                $_SESSION['lname'] = $user['lname'];
-                $_SESSION['role_txt'] = $user['role_txt'];
-
-                if ($user['role_txt'] === 'admin') {
-                    header("Location: dashboard_admin.php");
-                } elseif ($user['role_txt'] === 'artist') {
-                    header("Location: dashboard_artist.php");
+                if ($user['account_status'] === 'active') {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['fname'] = $user['fname'];
+                    $_SESSION['lname'] = $user['lname'];
+                    $_SESSION['role_txt'] = $user['role_txt'];
+    
+                    if ($user['role_txt'] === 'admin') {
+                        header("Location: dashboard_admin.php");
+                    } elseif ($user['role_txt'] === 'artist') {
+                        header("Location: dashboard_artist.php");
+                    } else {
+                        header("Location: dashboard_customer.php");
+                    }
+                    exit();
                 } else {
-                    header("Location: dashboard_customer.php");
+                    $errorMessage = "Your account has been deactivated.";   
                 }
-                exit();
             } else {
                 $errorMessage = "Invalid email or password.";
             }
