@@ -129,8 +129,8 @@ if (isset($_POST['mark_as_done'])) {
         <div class="controls">
             <h3>Controls</h3>
             <ul>
-                <li><a href="manage_bookings.php">View Assigned Bookings</a></li>
-                <li><a href="manage_artist_schedules.php">Manage Schedules</a></li>
+                <li><a class="link" href="manage_bookings.php">View Assigned Bookings</a></li>
+                <li><a class="link" href="manage_artist_schedules.php">Manage Schedules</a></li>
             </ul>
         </div>
 
@@ -138,23 +138,27 @@ if (isset($_POST['mark_as_done'])) {
         <h3>Finished Tattoos</h3>
         <?php if (mysqli_num_rows($resultFinishedTattoos) > 0) { ?>
             <div class="table-responsive">
-                <table class="table">
-                    <tr>
-                        <th>Finished Tattoo ID</th>
-                        <th>Description</th>
-                        <th>Date Finished</th>
-                        <th>Image</th>
-                    </tr>
-                    <?php while ($row = mysqli_fetch_assoc($resultFinishedTattoos)) { ?>
+                <table border="1" class="table">
+                    <thead>
                         <tr>
-                            <td><?php echo htmlspecialchars($row['id']); ?></td>
-                            <td><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
-                            <td><?php echo htmlspecialchars($row['date_finished']); ?></td>
-                            <td>
-                                <img src="<?php echo htmlspecialchars($row['finished_tattoo_url']); ?>" alt="Tattoo Image" width="100">
-                            </td>
+                            <th>Finished Tattoo ID</th>
+                            <th>Description</th>
+                            <th>Date Finished</th>
+                            <th>Image</th>
                         </tr>
-                    <?php } ?>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultFinishedTattoos)) { ?>
+                            <tr>
+                                <td data-label="Finished Tattoo ID"><?php echo htmlspecialchars($row['id']); ?></td>
+                                <td data-label="Description"><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
+                                <td data-label="Date Finished"><?php echo htmlspecialchars($row['date_finished']); ?></td>
+                                <td data-label="Image">
+                                    <img src="<?php echo htmlspecialchars($row['finished_tattoo_url']); ?>" alt="Tattoo Image" width="100">
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
                 </table>
             </div>
         <?php } else { ?>

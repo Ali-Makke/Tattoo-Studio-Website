@@ -24,22 +24,22 @@ $resultCustomerBookings = mysqli_query($conn, $sqlCustomerBookings);
 if (isset($_POST['review_artist'])) {
     if (empty($fname) || empty($lname) || empty($femail) || empty($fpassword)) {
         $errorMessage = "All fields are required.";
-    }else {
+    } else {
         $rating = test_input($_POST['rating']);
         $comment = test_input($_POST['review']);
         $artistId = test_input($_POST['artist_id']);
         $userId = test_input($_SESSION['user_id']);
-    
+
         $sqlCustomerId = "SELECT customers.id AS customer_id
                                  FROM customers
                                  JOIN users ON customers.user_id = users.id
                                  WHERE customers.user_id = '$userId'";
         $resultCustomers = mysqli_query($conn, $sqlCustomerId);
         $customerId = mysqli_fetch_assoc($resultCustomers)['customer_id'];
-    
+
         $sqlAddReview = "INSERT INTO `artist_reviews`(`customer_id`, `artist_id`, `rating`, `comment`) 
                          VALUES ('$customerId','$artistId','$rating','$comment')";
-    
+
         if (mysqli_query($conn, $sqlAddReview)) {
             $successMessage = "Review has been added successfully";
         } else {
@@ -50,7 +50,7 @@ if (isset($_POST['review_artist'])) {
                             WHERE artist_id = $artistId";
         $resultAvg = mysqli_query($conn, $sqlGetRatingAvg);
         $ratingAvg = mysqli_fetch_assoc($resultAvg)['avg'];
-    
+
         $sqlUpdateRating = "UPDATE artists set rating = '$ratingAvg' WHERE artists.id = $artistId";
         $resultUpdate = mysqli_query($conn, $sqlUpdateRating);
     }
@@ -95,54 +95,58 @@ if (isset($_POST['review_artist'])) {
         <h3>Your Bookings</h3>
 
         <div class="table-responsive">
-            <table class="table">
-                <tr>
-                    <th>Image</th>
-                    <th>Details</th>
-                    <th>Dates</th>
-                    <th>Times</th>
-                    <th>Additional Info</th>
-                    <th>Artist</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultCustomerBookings)) { ?>
+            <table border="1" class="table">
+                <thead>
                     <tr>
-                        <td>
-                            <?php
-                            if ($row['image_url']) {
-                                echo '<img src="' . $row['image_url'] . '" alt="Artist Image" style="width:100px;height:auto;">';
-                            } else {
-                                echo "No Image";
-                            }
-                            ?>
-                        </td>
-                        <td>
-                            <strong>Idea:</strong> <?php echo $row['idea']; ?><br>
-                            <strong>Size:</strong> <?php echo $row['size']; ?><br>
-                            <strong>Color:</strong> <?php echo ucfirst($row['color']); ?><br>
-                            <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
-                            <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
-                        </td>
-                        <td><?php echo $row['preferred_dates']; ?></td>
-                        <td><?php echo $row['preferred_times']; ?></td>
-                        <td><?php echo $row['additional_info']; ?></td>
-                        <td>
-                            <?php echo $row['artist_id'] . $row['artist_fname'] . ' ' . $row['artist_lname']; ?>
-                            <!-- make it so that they can only review once -->
-                            <br><br>
-                            <form method="post">
-                                <input type="hidden" name="artist_id" value="<?php echo $row['artist_id']; ?>">
-
-                                <label for="rating">Rating:</label>
-                                <input type="number" name="rating" id="rating" min="1" max="5" step="0.1" required>
-                                <br><br>
-                                <label for="review">Comment:</label>
-                                <textarea id="review" name="review" required></textarea>
-                                <br>
-                                <button type="submit" name="review_artist">Add Review</button>
-                            </form>
-                        </td>
+                        <th>Image</th>
+                        <th>Details</th>
+                        <th>Dates</th>
+                        <th>Times</th>
+                        <th>Additional Info</th>
+                        <th>Artist</th>
                     </tr>
-                <?php } ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultCustomerBookings)) { ?>
+                        <tr>
+                            <td data-label="Image">
+                                <?php
+                                if ($row['image_url']) {
+                                    echo '<img src="' . $row['image_url'] . '" alt="Artist Image" style="width:100px;height:auto;">';
+                                } else {
+                                    echo "No Image";
+                                }
+                                ?>
+                            </td>
+                            <td data-label="Details">
+                                <strong>Idea:</strong> <?php echo $row['idea']; ?><br>
+                                <strong>Size:</strong> <?php echo $row['size']; ?><br>
+                                <strong>Color:</strong> <?php echo ucfirst($row['color']); ?><br>
+                                <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
+                                <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
+                            </td>
+                            <td data-label="Dates"><?php echo $row['preferred_dates']; ?></td>
+                            <td data-label="Times"><?php echo $row['preferred_times']; ?></td>
+                            <td data-label="Additional Info"><?php echo $row['additional_info']; ?></td>
+                            <td data-label="Artist">
+                                <?php echo $row['artist_fname'] . ' ' . $row['artist_lname']; ?>
+                                <!-- make it so that they can only review once -->
+                                <br><br>
+                                <form method="post">
+                                    <input type="hidden" name="artist_id" value="<?php echo $row['artist_id']; ?>">
+
+                                    <label for="rating">Rating:</label>
+                                    <input type="number" name="rating" id="rating" min="1" max="5" step="0.1" required>
+                                    <br><br>
+                                    <label for="review">Comment:</label>
+                                    <textarea id="review" name="review" required></textarea>
+                                    <br>
+                                    <button type="submit" name="review_artist">Add Review</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
             </table>
         </div>
 

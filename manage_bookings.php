@@ -229,91 +229,95 @@ if (isset($_SESSION['message'])) {
                     </form>
                 <?php } ?>
                 <table border="1" class="table">
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Image</th>
-                        <th>Details</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
+                    <thead>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
-                            <td><?php echo "{$row['customer_fname']} {$row['customer_lname']}"; ?></td>
-                            <td>
-                                <?php
-                                if ($row['image_url']) {
-                                    echo '<img src="' . $row['image_url'] . '" alt="Artist Image" style="width:100px;height:auto;">';
-                                } else {
-                                    echo "No Image";
-                                }
-                                ?>
-                            </td>
-                            <td>
-                                <strong>Idea:</strong> <?php echo $row['idea']; ?><br>
-                                <strong>Size:</strong> <?php echo $row['size']; ?><br>
-                                <strong>Color:</strong> <?php echo ucfirst($row['color']); ?><br>
-                                <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
-                                <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
-                            </td>
-                            <td><?php echo ucfirst($row['booking_status']); ?></td>
-                            <?php if ($row['booking_status'] === 'pending' && is_admin()) { ?>
-                                <td>
-                                    <!-- Assign Booking To Artist -->
-                                    <form method="POST" style="display: inline-block;">
-                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                        <select name="artist_id" required>
-                                            <option value="">-- Assign Booking --</option>
-                                            <?php
-                                            mysqli_data_seek($resultArtists, 0);
-                                            while ($artist = mysqli_fetch_assoc($resultArtists)) {
-                                                echo "<option value='{$artist['id']}'>{$artist['fname']} {$artist['lname']}</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <br>
-                                        <!-- Schedule Booking -->
-                                        <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
-                                        <input type="time" name="reschedule_time" required>
-                                        <br>
-                                        <button type="submit" name="assign_artist" onclick="return confirm('Are you sure?');">Assign</button>
-                                    </form>
-                                    <br><br>
-                                    <!-- Cancel Booking -->
-                                    <form method="POST" style="display: inline-block;">
-                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit" name="cancel_booking" onclick="return confirm('Are you sure?');">Cancel Booking</button>
-                                    </form>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Image</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
+                            <tr>
+                                <td data-label="ID"><?php echo $row['id']; ?></td>
+                                <td data-label="Customer"><?php echo "{$row['customer_fname']} {$row['customer_lname']}"; ?></td>
+                                <td data-label="Image">
+                                    <?php
+                                    if ($row['image_url']) {
+                                        echo '<img src="' . $row['image_url'] . '" alt="Artist Image" style="width:100px;height:auto;">';
+                                    } else {
+                                        echo "No Image";
+                                    }
+                                    ?>
                                 </td>
-                            <?php } else if ($row['booking_status'] === 'approved' && is_artist()) { ?>
-                                <td>
-                                    <?php if (!$canEdit) { ?>
-                                        <form method="post">
-                                            <!-- Artist Schedule Booking -->
+                                <td data-label="Details">
+                                    <strong>Idea:</strong> <?php echo $row['idea']; ?><br>
+                                    <strong>Size:</strong> <?php echo $row['size']; ?><br>
+                                    <strong>Color:</strong> <?php echo ucfirst($row['color']); ?><br>
+                                    <strong>Placement:</strong> <?php echo $row['placement']; ?><br>
+                                    <strong>Budget:</strong> $<?php echo number_format($row['budget'], 1); ?><br>
+                                </td>
+                                <td data-label="Status"><?php echo ucfirst($row['booking_status']); ?></td>
+                                <?php if ($row['booking_status'] === 'pending' && is_admin()) { ?>
+                                    <td data-label="Actions">
+                                        <!-- Assign Booking To Artist -->
+                                        <form method="POST" style="display: inline-block;">
                                             <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                            <input type="hidden" name="booking_id" value="<?php echo $_SESSION['artist_id']; ?>">
+                                            <select name="artist_id" required>
+                                                <option value="">-- Assign Booking --</option>
+                                                <?php
+                                                mysqli_data_seek($resultArtists, 0);
+                                                while ($artist = mysqli_fetch_assoc($resultArtists)) {
+                                                    echo "<option value='{$artist['id']}'>{$artist['fname']} {$artist['lname']}</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <br>
+                                            <!-- Schedule Booking -->
                                             <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
                                             <input type="time" name="reschedule_time" required>
                                             <br>
-                                            <button type="submit" name="create_session">Add Session</button>
+                                            <button type="submit" name="assign_artist" onclick="return confirm('Are you sure?');">Assign</button>
                                         </form>
-                                    <?php } ?>
-                                    <!-- Add the button for bookings where all sessions are 'done' or 'canceled' -->
-                                    <?php if (in_array($row['id'], $completedBookings) && $canEdit) { ?>
-                                        <form method="post">
+                                        <br><br>
+                                        <!-- Cancel Booking -->
+                                        <form method="POST" style="display: inline-block;">
                                             <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                            <button type="button" name="mark_as_complete">Set as complete</button>
+                                            <button type="submit" name="cancel_booking" onclick="return confirm('Are you sure?');">Cancel Booking</button>
                                         </form>
-                                    <?php } else if ($canEdit) {
-                                        echo "<p>Some sessions are not complete</p>";
-                                    } ?>
-                                </td>
-                            <?php } else {
-                                echo "<td>This booking is" . '<br>' . $row['booking_status'] . '</td>';
-                            } ?>
-                        </tr>
-                    <?php endwhile; ?>
+                                    </td>
+                                <?php } else if ($row['booking_status'] === 'approved' && is_artist()) { ?>
+                                    <td data-label="Actions">
+                                        <?php if (!$canEdit) { ?>
+                                            <form method="post">
+                                                <!-- Artist Schedule Booking -->
+                                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                                <input type="hidden" name="booking_id" value="<?php echo $_SESSION['artist_id']; ?>">
+                                                <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
+                                                <input type="time" name="reschedule_time" required>
+                                                <br>
+                                                <button type="submit" name="create_session">Add Session</button>
+                                            </form>
+                                        <?php } ?>
+                                        <!-- Add the button for bookings where all sessions are 'done' or 'canceled' -->
+                                        <?php if (in_array($row['id'], $completedBookings) && $canEdit) { ?>
+                                            <form method="post">
+                                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                                <button type="button" name="mark_as_complete">Set as complete</button>
+                                            </form>
+                                        <?php } else if ($canEdit) {
+                                            echo "<p>Some sessions are not complete</p>";
+                                        } ?>
+                                    </td>
+                                <?php } else {
+                                    echo "<td data-label='Actions'>This booking is" . '<br>' . $row['booking_status'] . '</td>';
+                                } ?>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
                 </table>
             <?php } else {
                 echo '<br><h3>--- No Bookings<br><br></h3>';

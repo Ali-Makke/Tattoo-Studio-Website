@@ -158,69 +158,73 @@ if (isset($_SESSION['message'])) {
             <section>
                 <?php if (mysqli_num_rows($resultSchedules) > 0) { ?>
                     <table border="1" class="table">
-                        <tr>
-                            <th>Session Id</th>
-                            <th>Booking Id</th>
-                            <th>Customer</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                        <?php while ($schedule = mysqli_fetch_assoc($resultSchedules)) { ?>
+                        <thead>
                             <tr>
-                                <td><?php echo htmlspecialchars($schedule['session_id']); ?></td>
-                                <td><?php echo htmlspecialchars($schedule['booking_id']); ?></td>
-                                <td><?php echo htmlspecialchars($schedule['customer_fname'] . ' ' . $schedule['customer_lname']); ?></td>
-                                <td><?php echo htmlspecialchars($schedule['session_status']); ?></td>
-                                <td><?php echo htmlspecialchars($schedule['date']) . '<br>' . htmlspecialchars($schedule['time']); ?></td>
-                                <!-- actions -->
-                                <td>
-                                    <?php if ($schedule['session_status'] !== 'canceled' && ($schedule['session_status'] === 'scheduled' || $schedule['session_status'] === 'pending_approval')) { ?>
-                                        <?php if (is_admin()) { ?>
-                                            <!-- Assign schedule to artist -->
-                                            <form method="post">
-                                                <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
-                                                <select name="artistid" required>
-                                                    <option value="">-- Reassign Session --</option>
-                                                    <?php
-                                                    mysqli_data_seek($resultArtists, 0);
-                                                    while ($artist = mysqli_fetch_assoc($resultArtists)) {
-                                                        echo "<option value='{$artist['artist_id']}'>{$artist['fname']} {$artist['lname']}</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <button type="submit" name="reassign_session">Reassign</button>
-                                            </form>
-                                        <?php } ?>
-                                        <?php if ($schedule['session_status'] == 'pending_approval' || (is_artist() && !$canEdit)) { ?>
-                                            <!-- Reschedule Booking -->
-                                            <form method="POST" style="display: inline-block;">
-                                                <input type="hidden" name="booking_id" value="<?php echo $schedule['booking_id']; ?>">
-                                                <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
-                                                <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
-                                                <input type="time" name="reschedule_time" required>
-                                                <br>
-                                                <?php if (is_admin()) { ?>
-                                                    <button type="submit" name="reschedule_booking">Reschedule</button>
-                                                <?php } else { ?>
-                                                    <button type="submit" name="reschedule_booking_request">Reschedule</button>
-                                                <?php } ?>
-                                            </form>
-                                        <?php } else if (is_artist() && $canEdit) { ?>
-                                            <form method="post">
-                                                <br>
-                                                <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
-                                                <button type="submit" name="mark_as_complete" onclick="return confirm('Are you sure this session is completed?');">Mark As Complete</button>
-                                                <button type="submit" name="mark_as_canceled" onclick="return confirm('Are you sure you want to cancel this session?');">Mark As Canceled</button>
-                                                <br><br>
-                                            </form>
-                                        <?php } ?>
-                                    <?php } else { //means statue = done
-                                        echo "Session " . $schedule['session_status'];
-                                    } ?>
-                                </td>
+                                <th>Session Id</th>
+                                <th>Booking Id</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
                             </tr>
-                        <?php } ?>
+                        </thead>
+                        <tbody>
+                            <?php while ($schedule = mysqli_fetch_assoc($resultSchedules)) { ?>
+                                <tr>
+                                    <td data-label="Session Id"><?php echo htmlspecialchars($schedule['session_id']); ?></td>
+                                    <td data-label="Booking Id"><?php echo htmlspecialchars($schedule['booking_id']); ?></td>
+                                    <td data-label="Customer"><?php echo htmlspecialchars($schedule['customer_fname'] . ' ' . $schedule['customer_lname']); ?></td>
+                                    <td data-label="Status"><?php echo htmlspecialchars($schedule['session_status']); ?></td>
+                                    <td data-label="Date"><?php echo htmlspecialchars($schedule['date']) . '<br>' . htmlspecialchars($schedule['time']); ?></td>
+                                    <!-- actions -->
+                                    <td data-label="Actions">
+                                        <?php if ($schedule['session_status'] !== 'canceled' && ($schedule['session_status'] === 'scheduled' || $schedule['session_status'] === 'pending_approval')) { ?>
+                                            <?php if (is_admin()) { ?>
+                                                <!-- Assign schedule to artist -->
+                                                <form method="post">
+                                                    <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
+                                                    <select name="artistid" required>
+                                                        <option value="">-- Reassign Session --</option>
+                                                        <?php
+                                                        mysqli_data_seek($resultArtists, 0);
+                                                        while ($artist = mysqli_fetch_assoc($resultArtists)) {
+                                                            echo "<option value='{$artist['artist_id']}'>{$artist['fname']} {$artist['lname']}</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                    <button type="submit" name="reassign_session">Reassign</button>
+                                                </form>
+                                            <?php } ?>
+                                            <?php if ($schedule['session_status'] == 'pending_approval' || (is_artist() && !$canEdit)) { ?>
+                                                <!-- Reschedule Booking -->
+                                                <form method="POST" style="display: inline-block;">
+                                                    <input type="hidden" name="booking_id" value="<?php echo $schedule['booking_id']; ?>">
+                                                    <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
+                                                    <input type="date" name="reschedule_date" min="<?php echo date('Y-m-d'); ?>" required>
+                                                    <input type="time" name="reschedule_time" required>
+                                                    <br>
+                                                    <?php if (is_admin()) { ?>
+                                                        <button type="submit" name="reschedule_booking">Reschedule</button>
+                                                    <?php } else { ?>
+                                                        <button type="submit" name="reschedule_booking_request">Reschedule</button>
+                                                    <?php } ?>
+                                                </form>
+                                            <?php } else if (is_artist() && $canEdit) { ?>
+                                                <form method="post">
+                                                    <br>
+                                                    <input type="hidden" name="session_id" value="<?php echo $schedule['session_id']; ?>">
+                                                    <button type="submit" name="mark_as_complete" onclick="return confirm('Are you sure this session is completed?');">Mark As Complete</button>
+                                                    <button type="submit" name="mark_as_canceled" onclick="return confirm('Are you sure you want to cancel this session?');">Mark As Canceled</button>
+                                                    <br><br>
+                                                </form>
+                                            <?php } ?>
+                                        <?php } else { //means statue = done
+                                            echo "Session " . $schedule['session_status'];
+                                        } ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
                     </table>
                 <?php } else { ?>
                     <p>No bookings Approved.</p>

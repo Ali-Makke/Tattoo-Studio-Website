@@ -58,28 +58,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section class="customer-list">
             <h3>Customers</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultCustomers)) { ?>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['fname'] . ' ' . $row['lname']); ?></td>
-                        <td><?php echo htmlspecialchars($row['email']); ?></td>
-                        <td><?php echo htmlspecialchars($row['status']); ?></td>
-                        <td>
-                            <form method="POST">
-                                <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
-                                <input type="hidden" name="status" value="<?php echo $row['status']; ?>">
-                                <button type="submit" name="toggle_account_status">
-                                    <?php echo $row['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
-                                </button>
-                            </form>
-                        </td>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                <?php } ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultCustomers)) { ?>
+                        <tr>
+                            <td data-label="Name"><?php echo htmlspecialchars($row['fname'] . ' ' . $row['lname']); ?></td>
+                            <td data-label="Email"><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td data-label="Status"><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td data-label="Actions">
+                                <form method="POST">
+                                    <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                                    <input type="hidden" name="status" value="<?php echo $row['status']; ?>">
+                                    <button type="submit" name="toggle_account_status">
+                                        <?php echo $row['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
             </table>
         </section>
 
@@ -103,23 +107,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php
             if (isset($_GET['customer_id'])) {
-                if (mysqli_num_rows($resultBookings) > 0) {
-                    echo '<table border="1" class="table">';
-                    echo '<tr><th>Status</th><th>Preferred Dates</th><th>Preferred Times</th><th>Tattoo Description</th></tr>';
-                    while ($booking = mysqli_fetch_assoc($resultBookings)) {
-                        echo '<tr>';
-                        echo '<td>' . htmlspecialchars($booking['status']) . '</td>';
-                        echo '<td>' . htmlspecialchars($booking['preferred_dates']) . '</td>';
-                        echo '<td>' . htmlspecialchars($booking['preferred_times']) . '</td>';
-                        echo '<td>' . htmlspecialchars($booking['tattoo_description'] ?? 'N/A') . '</td>';
-                        echo '</tr>';
-                    }
-                    echo '</table>';
-                } else {
-                    echo '<p>No bookings found for this customer.</p>';
-                }
-            }
-            ?>
+                if (mysqli_num_rows($resultBookings) > 0) { ?>
+                    <table border="1" class="table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Preferred Dates</th>
+                                <th>Preferred Times</th>
+                                <th>Tattoo Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            while ($booking = mysqli_fetch_assoc($resultBookings)) { ?>
+                                <tr>
+                                    <td data-label="Status"><?php echo htmlspecialchars($booking['status']); ?></td>
+                                    <td data-label="Preferred Dates"><?php echo htmlspecialchars($booking['preferred_dates']); ?></td>
+                                    <td data-label="Preferred Times"><?php echo htmlspecialchars($booking['preferred_times']); ?></td>
+                                    <td data-label="Tattoo Description"><?php echo htmlspecialchars($booking['tattoo_description'] ?? 'N/A'); ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                <?php } else { ?>
+                    <p>No bookings found for this customer.</p>
+            <?php }
+            } ?>
         </section>
 
         <a class="back-link" href="dashboard_admin.php">Back to Dashboard</a>

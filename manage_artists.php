@@ -138,26 +138,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section>
             <h3>Artists</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>Name</th>
-                    <th>Bio</th>
-                    <th>Rating</th>
-                    <th>Actions</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultArtists)) { ?>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['artist_fname']); ?></td>
-                        <td><?php echo htmlspecialchars($row['bio']); ?></td>
-                        <td><?php echo number_format($row['rating'], 1); ?></td>
-                        <td>
-                            <form method="POST">
-                                <input type="hidden" name="artist_id" value="<?php echo $row['id']; ?>">
-                                <input type="text" name="bio" placeholder="Edit Biography" required>
-                                <button type="submit" name="edit_artist_bio">Edit Bio</button>
-                            </form>
-                        </td>
+                        <th>Name</th>
+                        <th>Bio</th>
+                        <th>Rating</th>
+                        <th>Actions</th>
                     </tr>
-                <?php } ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultArtists)) { ?>
+                        <tr>
+                            <td data-label="Name"><?php echo htmlspecialchars($row['artist_fname']); ?></td>
+                            <td data-label="Bio"><?php echo htmlspecialchars($row['bio']); ?></td>
+                            <td data-label="Rating"><?php echo number_format($row['rating'], 1); ?></td>
+                            <td data-label="Actions">
+                                <form method="POST">
+                                    <input type="hidden" name="artist_id" value="<?php echo $row['id']; ?>">
+                                    <input type="text" name="bio" placeholder="Edit Biography" required>
+                                    <button type="submit" name="edit_artist_bio">Edit Bio</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
             </table>
         </section>
 
@@ -165,27 +169,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section>
             <h3>Reviews</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>Artist</th>
-                    <th>Customer</th>
-                    <th>Comment</th>
-                    <th>Rating</th>
-                    <th>Actions</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultartist_reviews)) { ?>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['artist_fname']); ?></td>
-                        <td><?php echo htmlspecialchars($row['customer_fname']); ?></td>
-                        <td><?php echo $row['comment']; ?></td>
-                        <td><?php echo number_format($row['rating'], 1); ?></td>
-                        <td>
-                            <form method="POST" class="inline-form">
-                                <input type="hidden" name="review_id" value="<?php echo $row['id']; ?>">
-                                <button type="submit" name="delete_review" class="delete-button">Delete</button>
-                            </form>
-                        </td>
+                        <th>Artist</th>
+                        <th>Customer</th>
+                        <th>Comment</th>
+                        <th>Rating</th>
+                        <th>Actions</th>
                     </tr>
-                <?php } ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultartist_reviews)) { ?>
+                        <tr>
+                            <td data-label="Artist"><?php echo htmlspecialchars($row['artist_fname']); ?></td>
+                            <td data-label="Customer"><?php echo htmlspecialchars($row['customer_fname']); ?></td>
+                            <td data-label="Comment"><?php echo $row['comment']; ?></td>
+                            <td data-label="Rating"><?php echo number_format($row['rating'], 1); ?></td>
+                            <td data-label="Actions">
+                                <form method="POST" class="inline-form">
+                                    <input type="hidden" name="review_id" value="<?php echo $row['id']; ?>">
+                                    <button type="submit" name="delete_review" class="delete-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
             </table>
         </section>
 
@@ -206,17 +214,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <tbody>
                         <?php while ($artist = mysqli_fetch_assoc($resultArtistsPermissions)) { ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($artist['fname']); ?></td>
-                                <td><?php echo htmlspecialchars($artist['email']); ?></td>
-                                <td>
+                                <td data-label="Artist"><?php echo htmlspecialchars($artist['fname']); ?></td>
+                                <td data-label="Email"><?php echo htmlspecialchars($artist['email']); ?></td>
+                                <td data-label="Can View Earnings">
                                     <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_view_earnings]"
                                         <?php echo $artist['can_view_earnings'] ? 'checked' : ''; ?>>
                                 </td>
-                                <td>
+                                <td data-label="Can Update Bookings">
                                     <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_update_booking_status]"
                                         <?php echo $artist['can_update_booking_status'] ? 'checked' : ''; ?>>
                                 </td>
-                                <td>
+                                <td data-label="Can Manage Schedules">
                                     <input type="checkbox" name="artist_permissions[<?php echo $artist['artist_id']; ?>][can_manage_schedules]"
                                         <?php echo $artist['can_manage_schedules'] ? 'checked' : ''; ?>>
                                 </td>

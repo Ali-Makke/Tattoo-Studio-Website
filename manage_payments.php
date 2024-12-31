@@ -230,36 +230,40 @@ while ($row = mysqli_fetch_assoc($resultPaymentsView)) {
         <section class="payment-history">
             <h3>Payment History</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>Booking Number</th>
-                    <th>Customer</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Total Price</th>
-                    <th>Remaining</th>
-                    <th>Sub-Payments</th>
-                </tr>
-                <?php foreach ($payments as $payment): ?>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($payment['booking_id']); ?></td>
-                        <td><?php echo htmlspecialchars($payment['customer_name']); ?></td>
-                        <td><?php echo htmlspecialchars($payment['customer_email']); ?></td>
-                        <td><?php echo $payment['status']; ?></td>
-                        <td>$<?php echo number_format($payment['total_price'], 2); ?></td>
-                        <td>$<?php echo number_format($payment['price_remaining'], 2); ?></td>
-                        <td>
-                            <ul>
-                                <?php foreach ($payment['sub_payments'] as $subPayment): ?>
-                                    <li>
-                                        $<?php echo number_format($subPayment['amount'], 2); ?>
-                                        (<?php echo htmlspecialchars($subPayment['method']); ?>,
-                                        <?php echo htmlspecialchars($subPayment['paid_at']); ?>)
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </td>
+                        <th>Booking Number</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Total Price</th>
+                        <th>Remaining</th>
+                        <th>Sub-Payments</th>
                     </tr>
-                <?php endforeach; ?>
+                </thead>
+                <tbody>
+                    <?php foreach ($payments as $payment): ?>
+                        <tr>
+                            <td data-label="Booking Number"><?php echo htmlspecialchars($payment['booking_id']); ?></td>
+                            <td data-label="Customer"><?php echo htmlspecialchars($payment['customer_name']); ?></td>
+                            <td data-label="Email"><?php echo htmlspecialchars($payment['customer_email']); ?></td>
+                            <td data-label="Status"><?php echo $payment['status']; ?></td>
+                            <td data-label="Total Price">$<?php echo number_format($payment['total_price'], 2); ?></td>
+                            <td data-label="Remaining">$<?php echo number_format($payment['price_remaining'], 2); ?></td>
+                            <td data-label="Sub-Payments">
+                                <ul>
+                                    <?php foreach ($payment['sub_payments'] as $subPayment): ?>
+                                        <li>
+                                            $<?php echo number_format($subPayment['amount'], 2); ?>
+                                            (<?php echo htmlspecialchars($subPayment['method']); ?>,
+                                            <?php echo htmlspecialchars($subPayment['paid_at']); ?>)
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </section>
 

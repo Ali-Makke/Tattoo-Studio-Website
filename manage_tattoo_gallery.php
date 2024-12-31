@@ -12,7 +12,7 @@ if (isset($_POST['edit_image'])) {
     mysqli_query($conn, $sqlEditImage);
 }
 
-if(isset($_POST['delete_image'])){
+if (isset($_POST['delete_image'])) {
     $tattooId = $_POST['image_id'];
 
     $sqlDeleteTattoo = "DELETE FROM tattoos WHERE id = $tattooId";
@@ -107,59 +107,63 @@ $resultCategories = mysqli_query($conn, $sqlCategories);
         <div class="form-section">
             <h3>Manage Tattoos</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Visibility</th>
-                    <th>Actions</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultTattoos)) : ?>
+                <thead>
                     <tr>
-                        <td><?php echo $row['id']; ?></td>
-                        <td><img src="<?php echo $row['finished_tattoo_url']; ?>" alt="Tattoo Image" width="100"></td>
-                        <td><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
-                        <td><?php echo $row['category_name']; ?></td>
-                        <td>
-                            <?php if ($row['is_gallery_image'] == 'yes'): ?>
-                                <span style="color: green;">Visible</span>
-                            <?php else: ?>
-                                <span style="color: red;">Hidden</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <!-- Toggle Visibility (Show/Hide) -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
-                                <input type="hidden" name="current_status" value="<?php echo $row['is_gallery_image']; ?>">
-                                <button type="submit" name="toggle_visibility" onclick="return confirm('Are you sure you want to toggle visibility?');">
-                                    <?php echo $row['is_gallery_image'] == 'yes' ? 'Hide' : 'Show'; ?>
-                                </button>
-                            </form>
-                            <!-- Edit category and description -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
-                                <input type="text" name="description" placeholder="Edit Description" required>
-                                <select name="category_id" required>
-                                    <?php
-                                    mysqli_data_seek($resultCategories, 0);
-                                    while ($cat = mysqli_fetch_assoc($resultCategories)) {
-                                        $selected = $row['category_id'] == $cat['id'] ? 'selected' : '';
-                                        echo "<option value='{$cat['id']}' $selected>{$cat['name']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                                <button type="submit" name="edit_image" onclick="return confirm('Are you sure?');">Edit</button>
-                            </form>
-                            <!-- Delete Form -->
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
-                                <button type="submit" name="delete_image" onclick="return confirm('Are you sure you want to completely delete the image?');">Remove</button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Visibility</th>
+                        <th>Actions</th>
                     </tr>
-                <?php endwhile; ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultTattoos)) : ?>
+                        <tr>
+                            <td data-label="ID"><?php echo $row['id']; ?></td>
+                            <td data-label="Image"><img src="<?php echo $row['finished_tattoo_url']; ?>" alt="Tattoo Image" width="100"></td>
+                            <td data-label="Description"><?php echo trim(htmlspecialchars($row['description'])) ? htmlspecialchars($row['description']) : "Not Set"; ?></td>
+                            <td data-label="Category"><?php echo $row['category_name']; ?></td>
+                            <td data-label="Visibility">
+                                <?php if ($row['is_gallery_image'] == 'yes'): ?>
+                                    <span style="color: green;">Visible</span>
+                                <?php else: ?>
+                                    <span style="color: red;">Hidden</span>
+                                <?php endif; ?>
+                            </td>
+                            <td data-label="Actions">
+                                <!-- Toggle Visibility (Show/Hide) -->
+                                <form method="POST" style="display: inline-block;">
+                                    <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
+                                    <input type="hidden" name="current_status" value="<?php echo $row['is_gallery_image']; ?>">
+                                    <button type="submit" name="toggle_visibility" onclick="return confirm('Are you sure you want to toggle visibility?');">
+                                        <?php echo $row['is_gallery_image'] == 'yes' ? 'Hide' : 'Show'; ?>
+                                    </button>
+                                </form>
+                                <!-- Edit category and description -->
+                                <form method="POST" style="display: inline-block;">
+                                    <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
+                                    <input type="text" name="description" placeholder="Edit Description" required>
+                                    <select name="category_id" required>
+                                        <?php
+                                        mysqli_data_seek($resultCategories, 0);
+                                        while ($cat = mysqli_fetch_assoc($resultCategories)) {
+                                            $selected = $row['category_id'] == $cat['id'] ? 'selected' : '';
+                                            echo "<option value='{$cat['id']}' $selected>{$cat['name']}</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    <button type="submit" name="edit_image" onclick="return confirm('Are you sure?');">Edit</button>
+                                </form>
+                                <!-- Delete Form -->
+                                <form method="POST" style="display: inline-block;">
+                                    <input type="hidden" name="image_id" value="<?php echo $row['id']; ?>">
+                                    <button type="submit" name="delete_image" onclick="return confirm('Are you sure you want to completely delete the image?');">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
             </table>
         </div>
 

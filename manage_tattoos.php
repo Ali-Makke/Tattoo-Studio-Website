@@ -109,50 +109,53 @@ mysqli_close($conn);
 
         <!-- Display Bookings Table -->
         <?php if (mysqli_num_rows($resultBookings) > 0) { ?>
-        <h2>Bookings</h2>
-        <table border="1" class="table">
-            <tr>
-                <th>Booking ID</th>
-                <th>Customer</th>
-                <th>Artist</th>
-                <th>Actions</th>
-            </tr>
+            <h2>Bookings</h2>
+            <table border="1" class="table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Customer</th>
+                        <th>Artist</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
+                        <tr>
+                            <td data-label="Booking ID"><?php echo $row['booking_id']; ?></td>
+                            <td data-label="Customer"><?php echo htmlspecialchars($row['customer_fname']) . ' ' . htmlspecialchars($row['customer_lname']); ?></td>
+                            <td data-label="Artist"><?php echo htmlspecialchars($row['artist_fname']) . ' ' . htmlspecialchars($row['artist_lname']); ?></td>
+                            <td data-label="Actions">
+                                <!-- Add Tattoo Form for this Booking -->
+                                <form method="POST" enctype="multipart/form-data" action="">
+                                    <input type="hidden" name="booking_id" value="<?php echo $row['booking_id']; ?>">
+                                    <input type="hidden" name="artist_id" value="<?php echo $row['artist_id']; ?>">
 
-            <?php while ($row = mysqli_fetch_assoc($resultBookings)) : ?>
-                <tr>
-                    <td><?php echo $row['booking_id']; ?></td>
-                    <td><?php echo htmlspecialchars($row['customer_fname']) . ' ' . htmlspecialchars($row['customer_lname']); ?></td>
-                    <td><?php echo htmlspecialchars($row['artist_fname']) . ' ' . htmlspecialchars($row['artist_lname']); ?></td>
-                    <td>
-                        <!-- Add Tattoo Form for this Booking -->
-                        <form method="POST" enctype="multipart/form-data" action="">
-                            <input type="hidden" name="booking_id" value="<?php echo $row['booking_id']; ?>">
-                            <input type="hidden" name="artist_id" value="<?php echo $row['artist_id']; ?>">
-
-                            <label for="image">Image:</label>
-                            <input type="file" id="image" name="image" required>
-                            <br>
-                            <label for="category_id">Category:</label>
-                            <select name="category_id" required>
-                                <option value="">--Select Category--</option>
-                                <?php
-                                mysqli_data_seek($resultCategories, 0);
-                                while ($cat = mysqli_fetch_assoc($resultCategories)) {
-                                    echo "<option value=\"" . $cat['id'] . "\">" . $cat['name'] . "</option>";
-                                }
-                                ?>
-                            </select>
-                            <br>
-                            <label for="description">Description (optional):</label>
-                            <textarea id="description" name="description"></textarea>
-                            <br>
-                            <button type="submit">Add Tattoo</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </table>
-        <?php }else {
+                                    <label for="image">Image:</label>
+                                    <input type="file" id="image" name="image" required>
+                                    <br>
+                                    <label for="category_id">Category:</label>
+                                    <select name="category_id" required>
+                                        <option value="">--Select Category--</option>
+                                        <?php
+                                        mysqli_data_seek($resultCategories, 0);
+                                        while ($cat = mysqli_fetch_assoc($resultCategories)) {
+                                            echo "<option value=\"" . $cat['id'] . "\">" . $cat['name'] . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    <br>
+                                    <label for="description">Description (optional):</label>
+                                    <textarea id="description" name="description"></textarea>
+                                    <br>
+                                    <button type="submit">Add Tattoo</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        <?php } else {
             echo "<br>No bookings have been completed for selected artist<br>";
         } ?>
 

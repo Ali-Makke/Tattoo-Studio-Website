@@ -80,14 +80,14 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
         <div class="controls">
             <h3>Controls</h3>
             <ul>
-                <li><a href="manage_artists.php">Manage Artists</a></li>
-                <li><a href="manage_customers.php">Manage Customers</a></li>
-                <li><a href="manage_bookings.php">Manage Bookings</a></li>
-                <li><a href="manage_artist_schedules.php">Manage Schedules</a></li>
-                <li><a href="manage_categories.php">Manage Categories</a></li>
-                <li><a href="manage_tattoos.php">Manage Tattoos</a></li>
-                <li><a href="manage_tattoo_gallery.php">Manage Gallery</a></li>
-                <li><a href="manage_payments.php">Manage Payments</a></li>
+                <li><a class="link" href="manage_artists.php">Manage Artists</a></li>
+                <li><a class="link" href="manage_customers.php">Manage Customers</a></li>
+                <li><a class="link" href="manage_bookings.php">Manage Bookings</a></li>
+                <li><a class="link" href="manage_artist_schedules.php">Manage Schedules</a></li>
+                <li><a class="link" href="manage_categories.php">Manage Categories</a></li>
+                <li><a class="link" href="manage_tattoos.php">Manage Tattoos</a></li>
+                <li><a class="link" href="manage_tattoo_gallery.php">Manage Gallery</a></li>
+                <li><a class="link" href="manage_payments.php">Manage Payments</a></li>
             </ul>
         </div>
 
@@ -95,42 +95,50 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
         <div class="recent-activity">
             <h3>Recent Bookings</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>Style</th>
-                    <th>Placement</th>
-                    <th>Artist</th>
-                    <th>Booked At</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultRecentBookings)) : ?>
+                <thead>
                     <tr>
-                        <td><?php echo $row['id']; ?></td>
-                        <td><?php echo $row['style']; ?></td>
-                        <td><?php echo $row['placement']; ?></td>
-                        <td><?php echo $row['artist_name']; ?></td>
-                        <td><?php echo $row['created_at']; ?></td>
+                        <th>ID</th>
+                        <th>Style</th>
+                        <th>Placement</th>
+                        <th>Artist</th>
+                        <th>Booked At</th>
                     </tr>
-                <?php endwhile; ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultRecentBookings)) : ?>
+                        <tr>
+                            <td data-label="ID"><?php echo $row['id']; ?></td>
+                            <td data-label="Style"><?php echo $row['style']; ?></td>
+                            <td data-label="Placement"><?php echo $row['placement']; ?></td>
+                            <td data-label="Artist"><?php echo $row['artist_name']; ?></td>
+                            <td data-label="Booked At"><?php echo $row['created_at']; ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
             </table>
 
             <h3>Recent Reviews</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>Customer</th>
-                    <th>Artist</th>
-                    <th>Rating</th>
-                    <th>Comment</th>
-                    <th>Date</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultRecentartist_reviews)) : ?>
+                <thead>
                     <tr>
-                        <td><?php echo $row['customer_user_id']; ?></td>
-                        <td><?php echo $row['artist_name']; ?></td>
-                        <td><?php echo $row['rating']; ?>/5</td>
-                        <td><?php echo $row['comment']; ?></td>
-                        <td><?php echo $row['created_at']; ?></td>
+                        <th>Customer</th>
+                        <th>Artist</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Date</th>
                     </tr>
-                <?php endwhile; ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultRecentartist_reviews)) : ?>
+                        <tr>
+                            <td data-label="Customer"><?php echo $row['customer_user_id']; ?></td>
+                            <td data-label="Artist"><?php echo $row['artist_name']; ?></td>
+                            <td data-label="Rating"><?php echo $row['rating']; ?>/5</td>
+                            <td data-label="Comment"><?php echo $row['comment']; ?></td>
+                            <td data-label="Date"><?php echo $row['created_at']; ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
             </table>
         </div>
         <a class="logout-link" href="logout.php">Logout</a>

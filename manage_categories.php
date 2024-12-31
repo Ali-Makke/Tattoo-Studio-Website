@@ -65,24 +65,28 @@ $resultTattoos = mysqli_query($conn, $sqlTattoos);
         <div class="form-section">
             <h3>Edit Categories</h3>
             <table border="1" class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Actions</th>
-                </tr>
-                <?php while ($row = mysqli_fetch_assoc($resultCategories)) : ?>
+                <thead>
                     <tr>
-                        <td><?php echo $row['id']; ?></td>
-                        <td><?php echo $row['name']; ?></td>
-                        <td>
-                            <form method="POST" style="display: inline-block;">
-                                <input type="hidden" name="category_id" value="<?php echo $row['id']; ?>">
-                                <input type="text" name="category_name" placeholder="Edit Name" required>
-                                <button type="submit" name="edit_category">Edit</button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Actions</th>
                     </tr>
-                <?php endwhile; ?>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultCategories)) : ?>
+                        <tr>
+                            <td data-label="ID"><?php echo $row['id']; ?></td>
+                            <td data-label="Name"><?php echo $row['name']; ?></td>
+                            <td data-label="Actions">
+                                <form method="POST" style="display: inline-block;">
+                                    <input type="hidden" name="category_id" value="<?php echo $row['id']; ?>">
+                                    <input type="text" name="category_name" placeholder="Edit Name" required>
+                                    <button type="submit" name="edit_category">Edit</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
             </table>
         </div>
         <div class="form-section">
@@ -91,7 +95,7 @@ $resultTattoos = mysqli_query($conn, $sqlTattoos);
                 <label for="tattoo_id">Tattoo:</label>
                 <select id="tattoo_id" name="tattoo_id" required>
                     <?php
-                    mysqli_data_seek($resultTattoos, 0); 
+                    mysqli_data_seek($resultTattoos, 0);
                     while ($row = mysqli_fetch_assoc($resultTattoos)) {
                         echo "<option value='{$row['id']}'>Tattoo #{$row['id']} - {$row['description']} (Category: " . ($row['category_name'] ?? 'None') . ")</option>";
                     }
