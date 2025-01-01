@@ -5,6 +5,10 @@ require 'common_functions.php';
 
 $successMessage = $errorMessage = "";
 
+if (isset($_GET['timeout']) && $_GET['timeout'] == 1){
+    $errorMessage = "Your session has timed out due to inactivity. Please log in again.";
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $userId = uniqid();
     $formType = $_POST['form_id'] ?? '';
@@ -47,6 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION['fname'] = $fname;
                     $_SESSION['lname'] = $lname;
                     $_SESSION['role_txt'] = 'customer';
+                    $_SESSION['last_activity'] = time();
+
                     header("Location: index.php");
                     exit();
                 } else {
@@ -82,7 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION['fname'] = $user['fname'];
                     $_SESSION['lname'] = $user['lname'];
                     $_SESSION['role_txt'] = $user['role_txt'];
-    
+                    $_SESSION['last_activity'] = time();
+
                     if ($user['role_txt'] === 'admin') {
                         header("Location: dashboard_admin.php");
                     } elseif ($user['role_txt'] === 'artist') {
@@ -92,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     }
                     exit();
                 } else {
-                    $errorMessage = "Your account has been deactivated.";   
+                    $errorMessage = "Your account has been deactivated.";
                 }
             } else {
                 $errorMessage = "Invalid email or password.";
