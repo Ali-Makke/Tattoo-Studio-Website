@@ -34,14 +34,18 @@ JOIN users ON artists.user_id = users.id
 ORDER BY created_at DESC LIMIT 10";
 $resultRecentBookings = mysqli_query($conn, $sqlRecentBookings);
 
-// Recent artist_artist_reviews
-$sqlRecentartist_reviews = "SELECT artist_reviews.*, users.fname AS artist_name, customers.user_id AS customer_user_id
-                     FROM artist_reviews
-                     JOIN artists ON artist_reviews.artist_id = artists.id
-                     JOIN users ON artists.user_id = users.id
-                     JOIN customers ON artist_reviews.customer_id = customers.id
-                     ORDER BY created_at DESC LIMIT 10";
-$resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
+// Recent artist_reviews with sentiment
+$sqlRecentArtistReviews = "SELECT artist_reviews.*, 
+                                  users.fname AS artist_name, 
+                                  customers.user_id AS customer_user_id,
+                                  customers.user_id AS customer_id,
+                                  artist_reviews.sentiment
+                           FROM artist_reviews
+                           JOIN artists ON artist_reviews.artist_id = artists.id
+                           JOIN users ON artists.user_id = users.id
+                           JOIN customers ON artist_reviews.customer_id = customers.id
+                           ORDER BY created_at DESC LIMIT 10";
+$resultRecentArtistReviews = mysqli_query($conn, $sqlRecentArtistReviews);
 ?>
 
 <!DOCTYPE html>
@@ -125,16 +129,18 @@ $resultRecentartist_reviews = mysqli_query($conn, $sqlRecentartist_reviews);
                         <th>Artist</th>
                         <th>Rating</th>
                         <th>Comment</th>
+                        <th>Sentiment</th>
                         <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultRecentartist_reviews)) : ?>
+                    <?php while ($row = mysqli_fetch_assoc($resultRecentArtistReviews)) : ?>
                         <tr>
-                            <td data-label="Customer"><?php echo $row['customer_user_id']; ?></td>
+                            <td data-label="Customer"><?php echo $row['customer_id']; ?></td>
                             <td data-label="Artist"><?php echo $row['artist_name']; ?></td>
                             <td data-label="Rating"><?php echo $row['rating']; ?>/5</td>
                             <td data-label="Comment"><?php echo $row['comment']; ?></td>
+                            <td data-label="Sentiment"><?php echo ucfirst($row['sentiment']); ?></td>
                             <td data-label="Date"><?php echo $row['created_at']; ?></td>
                         </tr>
                     <?php endwhile; ?>

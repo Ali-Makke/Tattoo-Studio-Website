@@ -174,6 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <th>Artist</th>
                         <th>Customer</th>
                         <th>Comment</th>
+                        <th>Sentiment</th>
                         <th>Rating</th>
                         <th>Actions</th>
                     </tr>
@@ -184,6 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td data-label="Artist"><?php echo htmlspecialchars($row['artist_fname']); ?></td>
                             <td data-label="Customer"><?php echo htmlspecialchars($row['customer_fname']); ?></td>
                             <td data-label="Comment"><?php echo $row['comment']; ?></td>
+                            <td data-label="Sentiment"><?php echo ucfirst($row['sentiment']); ?></td>
                             <td data-label="Rating"><?php echo number_format($row['rating'], 1); ?></td>
                             <td data-label="Actions">
                                 <form method="POST" class="inline-form">

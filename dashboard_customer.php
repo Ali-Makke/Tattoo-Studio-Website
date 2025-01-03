@@ -7,6 +7,7 @@ require 'common_functions.php';
 $email = $_SESSION['email'];
 $errorMessage = $successMessage = '';
 
+// Fetch bookings
 $sqlCustomerBookings = "SELECT bookings.*,
     artists.id AS artist_id,
     users2.fname AS artist_fname,
@@ -18,41 +19,70 @@ LEFT JOIN artists ON bookings.artist_id = artists.id
 LEFT JOIN users AS users2 ON artists.user_id = users2.id
 WHERE users.email = '$email'
 ORDER BY bookings.created_at ASC;";
-
 $resultCustomerBookings = mysqli_query($conn, $sqlCustomerBookings);
 
 if (isset($_POST['review_artist'])) {
-    if (empty($fname) || empty($lname) || empty($femail) || empty($fpassword)) {
-        $errorMessage = "All fields are required.";
-    } else {
-        $rating = test_input($_POST['rating']);
-        $comment = test_input($_POST['review']);
-        $artistId = test_input($_POST['artist_id']);
-        $userId = test_input($_SESSION['user_id']);
+    $rating = test_input($_POST['rating']);
+    $comment = test_input($_POST['review']);
+    $artistId = test_input($_POST['artist_id']);
+    $userId = test_input($_SESSION['user_id']);
 
+    if ($rating <= 5 && $rating >= 1) {
+        $rating = round($rating, 1);
+
+        // Get Customer ID
         $sqlCustomerId = "SELECT customers.id AS customer_id
-                                 FROM customers
-                                 JOIN users ON customers.user_id = users.id
-                                 WHERE customers.user_id = '$userId'";
+                          FROM customers
+                          JOIN users ON customers.user_id = users.id
+                          WHERE customers.user_id = '$userId'";
         $resultCustomers = mysqli_query($conn, $sqlCustomerId);
         $customerId = mysqli_fetch_assoc($resultCustomers)['customer_id'];
 
-        $sqlAddReview = "INSERT INTO `artist_reviews`(`customer_id`, `artist_id`, `rating`, `comment`) 
-                         VALUES ('$customerId','$artistId','$rating','$comment')";
+        // Call the sentiment analysis API
+        $apiUrl = 'https://sentimental-analysis-api.onrender.com/predict';
+        $postData = json_encode(['review' => $comment]);
 
-        if (mysqli_query($conn, $sqlAddReview)) {
-            $successMessage = "Review has been added successfully";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $sentimentData = json_decode($response, true);
+        $sentiment = $sentimentData['sentiment'] ?? null;
+
+        if ($sentiment) {
+            // Insert Review and Sentiment into Database
+            $sqlAddReview = "INSERT INTO `artist_reviews`(`customer_id`, `artist_id`, `rating`, `comment`, `sentiment`) 
+                             VALUES ('$customerId','$artistId','$rating','$comment','$sentiment')";
+
+            if (mysqli_query($conn, $sqlAddReview)) {
+                $successMessage = "Review and sentiment analysis have been saved successfully!";
+            } else {
+                $errorMessage = "Error saving review. Please try again.";
+            }
+
+            // Update Artist's Average Rating
+            $sqlGetRatingAvg = "SELECT ROUND(AVG(rating), 2) AS avg
+                                FROM `artist_reviews`
+                                WHERE artist_id = $artistId";
+            $resultAvg = mysqli_query($conn, $sqlGetRatingAvg);
+            $ratingAvg = mysqli_fetch_assoc($resultAvg)['avg'];
+
+            $sqlUpdateRating = "UPDATE artists SET rating = '$ratingAvg' WHERE id = $artistId";
+            mysqli_query($conn, $sqlUpdateRating);
         } else {
-            $errorMessage = "Error adding review";
+            $errorMessage = "Error predicting sentiment. Please try again.";
         }
-        $sqlGetRatingAvg = "SELECT ROUND(AVG(rating), 2) AS avg
-                            FROM `artist_reviews`
-                            WHERE artist_id = $artistId";
-        $resultAvg = mysqli_query($conn, $sqlGetRatingAvg);
-        $ratingAvg = mysqli_fetch_assoc($resultAvg)['avg'];
-
-        $sqlUpdateRating = "UPDATE artists set rating = '$ratingAvg' WHERE artists.id = $artistId";
-        $resultUpdate = mysqli_query($conn, $sqlUpdateRating);
+    } else {
+        echo "<script>alert('Invalid Rating...')</script>";
     }
 }
 ?>
